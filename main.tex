@@ -1,0 +1,80 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------- Idioma y codificación ----------
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% ---------- Formato ----------
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{microtype}
+
+% ---------- Matemática y unidades ----------
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker={,}, per-mode=symbol}
+
+% ---------- Figuras y tablas ----------
+\usepackage{graphicx}
+\graphicspath{{Figuras/}}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{float}
+
+% ---------- Bibliografía (IEEE, backend biber) ----------
+\usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
+\addbibresource{referencias.bib}
+
+% ---------- Enlaces (cargar al final) ----------
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Datos del documento ----------
+\title{Relevamiento técnico y normativo, estándares espaciales y técnicas de diseño de PCB orientadas a nanosatélites CubeSat}
+\author{Agustín Mendes Rosa}
+\date{\today}
+
+\begin{document}
+
+% ---------- Portada ----------
+\begin{titlepage}
+  \centering
+  {\large Universidad Nacional de Córdoba\\
+  Facultad de Ciencias Exactas, Físicas y Naturales\\
+  Ingeniería Electrónica\par}
+  \vspace{2cm}
+  {\Large\bfseries Práctica Supervisada\par}
+  \vspace{1cm}
+  {\Large\itshape Relevamiento técnico y normativo, estándares espaciales y técnicas de diseño de PCB orientadas a nanosatélites CubeSat\par}
+  \vspace{2cm}
+  {\large Alumno: Agustín Mendes Rosa\par}
+  \vspace{0.5cm}
+  {\large Tutor de la entidad receptora: Mayco N. Orellano\\
+  Tutor de carrera: Carlos R. Leguizamón\par}
+  \vspace{0.5cm}
+  {\large Laboratorio de Investigación Aplicada y Desarrollo (LIADE)\par}
+  \vfill
+  {\large Córdoba, \the\year\par}
+\end{titlepage}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+% ---------- Contenido ----------
+\input{secciones/00_introduccion}
+\input{secciones/01_cubesat_cds}
+\input{secciones/02_pc104}
+\input{secciones/03_layout_pcb_rf}
+\input{secciones/04_termica_emi}
+\input{secciones/05_conclusiones}
+
+% ---------- Bibliografía ----------
+\printbibliography[heading=bibintoc,title={Bibliografía}]
+
+% ---------- Anexos ----------
+\appendix
+% \input{anexos/A_ejemplo}
+
+\end{document}

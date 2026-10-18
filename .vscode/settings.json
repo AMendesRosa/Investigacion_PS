@@ -1,0 +1,53 @@
+# ---- Archivos auxiliares de LaTeX / MiKTeX ----
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*.bak
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.idx
+*.ilg
+*.ind
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+*.ist
+*.lol
+*.thm
+*.tdo
+*-blx.bib
+*.auxlock
+*.pdfsync
+*.dvi
+*.ps
+
+# ---- Carpeta de compilación ----
+build/
+out/
+_minted*/
+
+# ---- VSCode (se versiona solo la configuración compartida) ----
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# ---- Sistema operativo ----
+Thumbs.db
+desktop.ini
+.DS_Store

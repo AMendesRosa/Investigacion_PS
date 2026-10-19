@@ -1,55 +1,67 @@
-# ---- Archivos auxiliares de LaTeX / MiKTeX ----
-*.aux
-*.log
-*.out
-*.toc
-*.lof
-*.lot
-*.fls
-*.fdb_latexmk
-*.synctex.gz
-*.synctex(busy)
-*.bbl
-*.bcf
-*.blg
-*.run.xml
-*.bak
-*.nav
-*.snm
-*.vrb
-*.xdv
-*.idx
-*.ilg
-*.ind
-*.glo
-*.gls
-*.glg
-*.acn
-*.acr
-*.alg
-*.ist
-*.lol
-*.thm
-*.tdo
-*-blx.bib
-*.auxlock
-*.pdfsync
-*.dvi
-*.ps
-
-# ---- Carpeta de compilación ----
-build/
-out/
-_minted*/
-
-# ---- VSCode (se versiona solo la configuración compartida) ----
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-
-# ---- Sistema operativo ----
-Thumbs.db
-desktop.ini
-.DS_Store
-
-"latex-workshop.linting.chktex.exec.args": ["-wall","-n22","-n30","-e16","-q","-n1","-n2","-n6","-n8","-n13","-n24","-n36"]
+{
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ],
+      "env": {}
+    },
+    {
+      "name": "biber",
+      "command": "biber",
+      "args": [
+        "%DOCFILE%"
+      ],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "pdflatex ➞ biber ➞ pdflatex ×2",
+      "tools": [
+        "pdflatex",
+        "biber",
+        "pdflatex",
+        "pdflatex"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "first",
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.blg",
+    "*.bcf",
+    "*.idx",
+    "*.ind",
+    "*.lof",
+    "*.lot",
+    "*.out",
+    "*.toc",
+    "*.synctex.gz",
+    "*.run.xml",
+    "*.fls",
+    "*.fdb_latexmk"
+  ],
+  "latex-workshop.linting.chktex.exec.args": [
+    "-wall",
+    "-n22",
+    "-n30",
+    "-e16",
+    "-q",
+    "-n1",
+    "-n2",
+    "-n6",
+    "-n8",
+    "-n13",
+    "-n24",
+    "-n36"
+  ]
+}

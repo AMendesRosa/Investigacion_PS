@@ -8,8 +8,9 @@
 % ---------- Formato ----------
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{setspace}
-\onehalfspacing 
+\onehalfspacing
 \usepackage{microtype}
+% hyperref se carga UNA sola vez. hypertexnames=false evita el aviso 'destination ... page.1' de la portada
 \usepackage[hidelinks,hypertexnames=false]{hyperref}
 \usepackage{xurl}
 
@@ -31,13 +32,10 @@
 \usepackage{csquotes}
 \usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
 \addbibresource{referencias.bib}
+\setcounter{biburlnumpenalty}{100}
+\setcounter{biburlucpenalty}{100}
+\setcounter{biburllcpenalty}{100}
 
-  \setcounter{biburlnumpenalty}{100}
-  \setcounter{biburlucpenalty}{100}
-  \setcounter{biburllcpenalty}{100}
-
-% ---------- Enlaces (cargar al final) ----------
-\usepackage[hidelinks]{hyperref}
 
 % ---------- Datos del documento ----------
 \title{Relevamiento técnico y normativo, estándares espaciales y técnicas de diseño de PCB orientadas a nanosatélites CubeSat}

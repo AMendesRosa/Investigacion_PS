@@ -1,5 +1,323 @@
-\chapter{Técnicas de layout de PCB para RF y aplicaciones espaciales}
-\label{cap:layout}
+\chapter{Técnicas de layout de PCB para RF y aplicaciones espaciales}\label{cap:layout}
 
-\section{Líneas de transmisión planares}
-\label{sec:layout-lineas}
+Este capítulo reúne lo necesario para diseñar la placa de la cadena filtro--amplificador--filtro del transponder: qué línea de transmisión planar usar para obtener \SI{50}{\ohm}, qué sustrato elegir, cómo disponer masas, vías y componentes, y qué cambia cuando la placa va a operar en órbita. Los valores numéricos que aparecen (anchos de pista, pérdidas, reactancias) se calcularon con las fórmulas citadas, y cada uno está identificado como cálculo propio. Se verificó el código de cálculo contra un ejemplo publicado (Sección~\ref{sec:layout-microstrip}), pero no se comparó contra un solucionador electromagnético ni contra las herramientas de un fabricante, por lo que son valores de partida y no de fabricación.
+
+\verificar{la frecuencia central y el ancho de banda de la cadena del PI\@. En todo el capítulo se usan \SI{145}{\mega\hertz} y \SI{435}{\mega\hertz} como ejemplos, por ser las bandas habituales del servicio de aficionados por satélite; hay que reemplazarlos por los valores reales}
+
+%--------------------------------------------------------------------
+\section{Por qué el layout importa en VHF/UHF}\label{sec:layout-contexto}
+
+A frecuencias bajas se puede tratar una pista como una conexión ideal. La teoría de líneas de transmisión pasa a ser necesaria cuando la longitud del conductor es una fracción apreciable de la longitud de onda~\cite{pozar}. Una placa PC/104 mide \SI{90,2}{\milli\metre}\,$\times$\,\SI{95,9}{\milli\metre} (Capítulo~\ref{cap:pc104}), y la Tabla~\ref{tab:layout-lambda} muestra que a \SI{435}{\mega\hertz} ese lado equivale a casi un cuarto de longitud de onda en la línea. Es decir: en UHF una conexión que cruce la placa ya no es un cable ideal, y a \SI{145}{\mega\hertz} es un caso intermedio.
+
+\begin{table}[H]
+  \centering
+  \caption[Longitudes de onda frente al tamaño de la placa.]{Longitudes de onda frente al tamaño de la placa. Cálculo propio para una microstrip de \SI{50}{\ohm} sobre FR-4 de \SI{1,6}{\milli\metre} ($\varepsilon_e = 3{,}08$, Tabla~\ref{tab:layout-ms}).}\label{tab:layout-lambda}
+  \begin{tabular}{@{}rrrrr@{}}
+    \toprule
+    $f$ [MHz] & $\lambda_0$ [mm] & $\lambda_g$ [mm] & $\lambda_g/20$ [mm] & \SI{90,2}{\milli\metre} en $\lambda_g$ \\
+    \midrule
+    145 & 2068 & 1179 & \num{58,9} & \num{0,077} \\
+    435 & 689  & 393  & \num{19,6} & \num{0,230} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Aquí $\lambda_0 = c/f$ es la longitud de onda en el vacío y $\lambda_g = \lambda_0/\sqrt{\varepsilon_e}$ la longitud de onda guiada en la línea, con $\varepsilon_e$ la permitividad efectiva (Sección~\ref{sec:layout-microstrip}).
+
+Hay dos consecuencias prácticas. La primera es que los elementos pasivos de los filtros y las redes de adaptación se pueden realizar con componentes discretos, pero los tramos de pista entre ellos y las vías de masa agregan inductancias parásitas que ya no son despreciables (Sección~\ref{sec:layout-reglas}). La segunda es que el sustrato deja de ser un simple soporte mecánico: su permitividad y su tolerancia fijan la impedancia de cada tramo.
+
+%--------------------------------------------------------------------
+\section{Líneas de transmisión planares}\label{sec:layout-lineas}
+
+\subsection{Microstrip}\label{sec:layout-microstrip}
+
+La microstrip es una pista de cobre sobre una cara del dieléctrico y un plano de masa en la cara opuesta (Figura~\ref{fig:layout-ms}). El campo se reparte entre el dieléctrico y el aire, por lo que la onda no es TEM pura y se la trata como cuasi-TEM\@. El efecto se resume en una permitividad efectiva $\varepsilon_e$, comprendida entre $1$ y $\varepsilon_r$, con la que se calculan la velocidad de fase y la impedancia característica~\cite{pozar,steer1}.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[>=stealth]
+    \fill[gray!25] (0,0) rectangle (6,1.2);
+    \draw (0,0) rectangle (6,1.2);
+    \fill[black!70] (0,-0.12) rectangle (6,0);
+    \fill[orange!80!black] (2.25,1.2) rectangle (3.75,1.32);
+    \foreach \x in {2.5,3.0,3.5} \draw[->,blue!60!black,thin] (\x,1.2) -- (\x,0.05);
+    \draw[<->] (2.25,2.0) -- (3.75,2.0) node[midway,above] {$w$};
+    \draw[<->] (6.4,0) -- (6.4,1.2) node[midway,right] {$h$};
+    \draw[<->] (1.9,1.2) -- (1.9,1.32) node[left] {$t$};
+    \node at (0.9,0.6) {$\varepsilon_r$, $\tan\delta$};
+    \node[anchor=west] at (4.6,2.0) {pista (cobre)};
+    \draw[thin] (4.6,1.85) -- (3.8,1.3);
+    \node[anchor=north] at (3,-0.2) {plano de masa};
+  \end{tikzpicture}
+  \caption[Corte transversal de una microstrip.]{Corte transversal de una microstrip: pista de ancho $w$ y espesor $t$ sobre un dieléctrico de espesor $h$. Las flechas representan, de forma esquemática, el campo eléctrico entre la pista y el plano de masa. Esquema propio.}\label{fig:layout-ms}
+\end{figure}
+
+\subsubsection{Fórmulas de análisis}
+
+Con $u = w/h$, Steer da expresiones de tipo Hammerstad para la permitividad efectiva y la impedancia, con exactitud declarada mejor que \SI{0,2}{\percent} para $\varepsilon_e$ (con $0{,}01 \le u \le 100$ y $1 \le \varepsilon_r \le 128$) y mejor que \SI{0,1}{\percent} para $Z_0$ (con $u < 1000$)~\cite{steer1}:
+\begin{align}
+  \varepsilon_e &= \frac{\varepsilon_r + 1}{2} + \frac{\varepsilon_r - 1}{2}\,\bigl[\,1 + 10/u\,\bigr]^{-a\,b}\label{eq:layout-ee}\\
+  a &= 1 + \frac{1}{49}\ln \frac{u^4 + (u/52)^2}{u^4 + 0{,}432} + \frac{1}{18{,}7}\ln \bigl[\,1 + (u/18{,}1)^3\,\bigr] \notag\\
+  b &= 0{,}564\,\bigl[\,(\varepsilon_r - 0{,}9)/(\varepsilon_r + 3)\,\bigr]^{0{,}053} \notag\\
+  Z_0 &= \frac{Z_{01}}{\sqrt{\varepsilon_e}}, \qquad Z_{01} = 60\ln \Bigl[\,F_1/u + \sqrt{1 + (2/u)^2}\,\Bigr]\label{eq:layout-z0}\\
+  F_1 &= 6 + (2\pi - 6)\exp \bigl\{-(30{,}666/u)^{0{,}7528}\bigr\} \notag
+\end{align}
+La velocidad de fase es $c/\sqrt{\varepsilon_e}$ y la longitud de onda guiada, $\lambda_g = \lambda_0/\sqrt{\varepsilon_e}$. Para diseñar hay que hacer el camino inverso (hallar $w/h$ para un $Z_0$ dado). Steer incluye fórmulas de síntesis~\cite{steer2}; en este trabajo se resolvió en cambio la ecuación~\eqref{eq:layout-z0} numéricamente para $Z_0 = \SI{50}{\ohm}$. Como control, el mismo código reproduce el ejemplo resuelto de Steer ($w = \SI{600}{\micro\metre}$, $h = \SI{635}{\micro\metre}$, $\varepsilon_r = 4{,}1$): da $\varepsilon_e = \num{2,967}$ (igual al publicado) y $Z_0 = \SI{75,3}{\ohm}$ (el texto publica \SI{75,4}{\ohm}).
+
+\subsubsection{Anchos de pista para 50 ohm}
+
+La Tabla~\ref{tab:layout-ms} muestra el resultado. Para un dado $\varepsilon_r$ la relación $w/h$ es fija, de modo que el ancho es proporcional al espesor del dieléctrico: un FR-4 de \SI{1,6}{\milli\metre} necesita pistas de más de \SI{3}{\milli\metre}, mientras que con un prepreg de \SI{0,2}{\milli\metre} (típico de una placa de cuatro capas) bastan \SI{0,41}{\milli\metre}.
+
+\begin{table}[H]
+  \centering
+  \caption[Ancho de microstrip de 50 ohm (cálculo propio).]{Ancho de una microstrip de \SI{50}{\ohm} con las ecuaciones~\eqref{eq:layout-ee} y~\eqref{eq:layout-z0} (cálculo propio, línea ideal de espesor nulo). Para FR-4 se usó $\varepsilon_r = 4{,}0$ (la hoja de datos del FR406 da \num{4,00} a \SI{100}{\mega\hertz} y \num{3,95} a \SI{1}{\giga\hertz}~\cite{isolafr406}); para el RO4350B, el valor de diseño $\varepsilon_r = 3{,}66$~\cite{rogersro4350b}.}\label{tab:layout-ms}
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    Sustrato & $h$ [mm] & $w/h$ & $w$ [mm] & $\varepsilon_e$ \\
+    \midrule
+    FR-4     & \num{1,6}   & \num{2,056} & \num{3,29} & \num{3,08} \\
+    FR-4     & \num{0,8}   & \num{2,056} & \num{1,65} & \num{3,08} \\
+    FR-4     & \num{0,2}   & \num{2,056} & \num{0,41} & \num{3,08} \\
+    RO4350B  & \num{0,508} & \num{2,192} & \num{1,11} & \num{2,86} \\
+    RO4350B  & \num{0,762} & \num{2,192} & \num{1,67} & \num{2,86} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Los espesores del RO4350B de la tabla (\SI{0,508}{\milli\metre} y \SI{0,762}{\milli\metre}) son valores de ejemplo; \verificar{espesores comerciales disponibles del RO4350B, que no figuran en la página consultada del fabricante}.
+
+\subsubsection{Sensibilidad a tolerancias}
+
+La impedancia depende de $\varepsilon_r$ y de la geometría, ambas con tolerancia de fabricación. Con las mismas ecuaciones, para la línea de \SI{3,29}{\milli\metre} sobre FR-4 de \SI{1,6}{\milli\metre}:
+
+\begin{itemize}
+  \item un error de \SI{0,05}{\milli\metre} en el ancho cambia $Z_0$ en \SI{0,47}{\ohm} (de \SI{50,0}{\ohm} a \SI{49,5}{\ohm} o \SI{50,5}{\ohm});
+  \item en cambio, una permitividad de \num{4,6} en lugar de \num{4,0} baja la impedancia a \SI{47,0}{\ohm}. Contra \SI{50}{\ohm}, el coeficiente de reflexión es $|\Gamma| = 3/97 \approx \num{0,03}$, es decir, una pérdida de retorno cercana a \SI{30}{\decibel}.
+\end{itemize}
+
+Para un filtro o una red de adaptación, \SI{30}{\decibel} de pérdida de retorno por un tramo de línea suele ser tolerable, aunque depende de la especificación del PI\@. La conclusión es que la incertidumbre del $\varepsilon_r$ de un FR-4 común afecta más que la del ancho de pista, y que conviene pedir al fabricante el valor real de su laminado y su apilado.
+
+\subsubsection{Pérdidas}
+
+Hay dos mecanismos relevantes a estas frecuencias. Las pérdidas en el dieléctrico y en el conductor se pueden estimar con~\cite{pozar}
+\begin{equation}\label{eq:layout-perdidas}
+  \alpha_d = \frac{k_0\,\varepsilon_r\,(\varepsilon_e - 1)\tan\delta}{2\sqrt{\varepsilon_e}\,(\varepsilon_r - 1)}, \qquad \alpha_c \approx \frac{R_s}{Z_0\,w}, \qquad R_s = \sqrt{\frac{\omega\mu_0}{2\sigma}},
+\end{equation}
+donde $k_0 = 2\pi/\lambda_0$, $R_s$ es la resistencia superficial del cobre y $\sigma = \SI{5,8e7}{\siemens\per\metre}$. \verificar{que la forma de estas expresiones coincida con la Sección~3.8 de Pozar, que no se pudo abrir. Las expresiones se dan en su forma habitual, pero no se tomaron del libro}
+
+La Tabla~\ref{tab:layout-perd} y la Figura~\ref{fig:layout-perd} muestran el resultado para las dos líneas de la Tabla~\ref{tab:layout-ms} con $w = \SI{3,29}{\milli\metre}$ sobre FR-4 de \SI{1,6}{\milli\metre} y $w = \SI{1,11}{\milli\metre}$ sobre RO4350B de \SI{0,508}{\milli\metre}. El espesor de piel del cobre es de \SI{5,5}{\micro\metre} a \SI{145}{\mega\hertz} y \SI{3,2}{\micro\metre} a \SI{435}{\mega\hertz}, muy inferior al del cobre de la placa. Se usó $\tan\delta = \num{0,0161}$ para el FR-4 (valor del FR406 a \SI{1}{\giga\hertz}~\cite{isolafr406}) y $\num{0,0037}$ para el RO4350B (dato a \SI{10}{\giga\hertz}~\cite{rogersro4350b}). No se incluyó la rugosidad del cobre, que aumenta $\alpha_c$.
+
+\begin{table}[H]
+  \centering
+  \caption[Pérdidas estimadas de una microstrip de 50 ohm.]{Pérdidas estimadas de una microstrip de \SI{50}{\ohm} (cálculo propio con la ecuación~\eqref{eq:layout-perdidas}, cobre liso).}\label{tab:layout-perd}
+  \begin{tabular}{@{}llcccc@{}}
+    \toprule
+    Sustrato & $f$ [MHz] & $\alpha_d$ [dB/m] & $\alpha_c$ [dB/m] & Total [dB/\SI{10}{\centi\metre}] \\
+    \midrule
+    FR-4 \SI{1,6}{\milli\metre}      & 145 & \num{0,34} & \num{0,17} & \num{0,050} \\
+    FR-4 \SI{1,6}{\milli\metre}      & 435 & \num{1,01} & \num{0,29} & \num{0,129} \\
+    RO4350B \SI{0,508}{\milli\metre} & 145 & \num{0,07} & \num{0,49} & \num{0,056} \\
+    RO4350B \SI{0,508}{\milli\metre} & 435 & \num{0,22} & \num{0,85} & \num{0,107} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{perdidas_microstrip.pdf}
+  \caption[Atenuación de una microstrip de 50 ohm de 10 cm.]{Atenuación estimada de \SI{10}{\centi\metre} de microstrip de \SI{50}{\ohm} (cálculo propio, ecuación~\eqref{eq:layout-perdidas}). Las líneas de trazos muestran solo la parte dieléctrica.}\label{fig:layout-perd}
+\end{figure}
+
+El resultado es poco intuitivo: en este rango y para tramos cortos, las pérdidas de la propia pista son del orden de \SI{0,1}{\decibel} por \SI{10}{\centi\metre} en ambos materiales. En el RO4350B la pista es más angosta y domina la pérdida del conductor, de modo que el menor $\tan\delta$ casi no mejora la atenuación de una línea corta. Lo que sí cambia es el factor de mérito de los elementos resonantes, la estabilidad del $\varepsilon_r$ y el comportamiento térmico, tratados en la Sección~\ref{sec:layout-sustratos}.
+
+\subsection{Guía de onda coplanar con plano de masa}\label{sec:layout-cpwg}
+
+En la guía de onda coplanar con plano de masa (CPWG, \emph{grounded coplanar waveguide}, también llamada CBCPW) la pista central está rodeada, en la misma cara, por dos planos de masa separados por una brecha $S$, y hay un tercer plano de masa debajo (Figura~\ref{fig:layout-cpwg}). Según un glosario de RF, ofrece mejor aislamiento entre pistas vecinas, porque el campo queda confinado por las masas superior e inferior, y permite que un transistor se asiente sobre las masas superiores, conectadas a la inferior con vías, de modo que el calor no tenga que atravesar el sustrato~\cite{rfessentialscpwg}. A cambio, la atenuación es algo mayor que en la coplanar sin plano inferior. Estas son afirmaciones cualitativas de una fuente divulgativa, no de una referencia primaria.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[>=stealth]
+    \fill[gray!25] (0,0) rectangle (8,1.2);
+    \draw (0,0) rectangle (8,1.2);
+    \fill[black!70] (0,-0.12) rectangle (8,0);
+    \fill[orange!80!black] (0,1.2) rectangle (2.6,1.32);
+    \fill[orange!80!black] (3.3,1.2) rectangle (4.7,1.32);
+    \fill[orange!80!black] (5.4,1.2) rectangle (8,1.32);
+    \fill[white] (0.7,0) rectangle (0.9,1.2);
+    \fill[white] (7.1,0) rectangle (7.3,1.2);
+    \draw (0.7,0) -- (0.7,1.2) (0.9,0) -- (0.9,1.2) (7.1,0) -- (7.1,1.2) (7.3,0) -- (7.3,1.2);
+    \draw[<->] (3.3,2.1) -- (4.7,2.1) node[midway,above] {$W$};
+    \draw[<->] (2.6,1.7) -- (3.3,1.7) node[midway,above] {$S$};
+    \draw[<->] (4.7,1.7) -- (5.4,1.7) node[midway,above] {$S$};
+    \draw[<->] (8.4,0) -- (8.4,1.2) node[midway,right] {$H$};
+    \node at (1.8,0.6) {$\varepsilon_r$};
+    \node[anchor=north] at (4,-0.2) {plano de masa inferior};
+    \node[anchor=south] at (0.8,1.45) {vía};
+    \node[anchor=south] at (7.2,1.45) {vía};
+  \end{tikzpicture}
+  \caption[Corte transversal de una CPWG.]{Corte transversal de una guía coplanar con plano de masa: pista de ancho $W$, brechas $S$ a ambos lados, espesor de dieléctrico $H$ y vías que unen las masas superiores con la inferior. Esquema propio.}\label{fig:layout-cpwg}
+\end{figure}
+
+\subsubsection{Fórmulas}
+
+El código fuente del calculador de líneas de KiCad implementa las expresiones de Ghione y Naldi para este caso~\cite{kicadcoplanar,ghione83}. Con las elípticas completas $K\,(k)$ y $K'\,(k) = K\,(\sqrt{1-k^2})$, y $q\,(k) = K\,(k)/K'\,(k)$, resultan
+\begin{equation}\label{eq:layout-cpwg-k}
+  k_1 = \frac{W}{W + 2S}, \qquad k_3 = \frac{\tanh \frac{\pi W}{4H}}{\tanh \frac{\pi (W + 2S)}{4H}}
+\end{equation}
+\begin{equation}\label{eq:layout-cpwg-z}
+  \varepsilon_e = 1 + \frac{q_3}{q_1 + q_3}\,(\varepsilon_r - 1), \qquad Z_0 = \frac{\eta_0}{2}\,\frac{1}{(q_1 + q_3)\sqrt{\varepsilon_e}}
+\end{equation}
+con $q_1 = q\,(k_1)$, $q_3 = q\,(k_3)$ y $\eta_0 = \SI{376,73}{\ohm}$. Son las expresiones estáticas para conductores de espesor nulo; KiCad agrega correcciones por espesor, por dispersión y por máscara de soldadura que aquí no se usaron~\cite{kicadcoplanar}. Se tomó la forma de la fuente secundaria (el código) y no del artículo original de Ghione y Naldi, que no se pudo consultar.
+
+\subsubsection{Dimensiones para 50 ohm}
+
+Para \SI{50}{\ohm}, la Tabla~\ref{tab:layout-cpwg} da las brechas resultantes. La CPWG admite varias combinaciones $(W, S)$ para el mismo $Z_0$, a diferencia de la microstrip, y cuanto más angosta es la pista, más chica debe ser la brecha. Cuando $W$ se acerca al ancho de la microstrip equivalente, la brecha necesaria crece rápidamente y la línea tiende a una microstrip.
+
+\begin{table}[H]
+  \centering
+  \caption[Brecha de una CPWG de 50 ohm (cálculo propio).]{Brecha $S$ de una CPWG de \SI{50}{\ohm} con las ecuaciones~\eqref{eq:layout-cpwg-k} y~\eqref{eq:layout-cpwg-z} (cálculo propio, conductor de espesor nulo).}\label{tab:layout-cpwg}
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    Sustrato & $H$ [mm] & $W$ [mm] & $S$ [mm] & $\varepsilon_e$ \\
+    \midrule
+    FR-4    & \num{1,6}   & \num{1,0} & \num{0,120} & \num{2,54} \\
+    FR-4    & \num{1,6}   & \num{1,5} & \num{0,214} & \num{2,59} \\
+    FR-4    & \num{0,2}   & \num{0,3} & \num{0,071} & \num{2,73} \\
+    RO4350B & \num{0,508} & \num{0,5} & \num{0,062} & \num{2,41} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Se ven dos problemas. El primero es de fabricación: las brechas de entre \SI{0,06}{\milli\metre} y \SI{0,12}{\milli\metre} están en el límite de lo que muchos fabricantes garantizan, \verificar{la brecha y el ancho mínimos que acepta el fabricante elegido}. El segundo es la sensibilidad: con $W = \SI{1,0}{\milli\metre}$ sobre FR-4 de \SI{1,6}{\milli\metre}, un error de \SI{0,02}{\milli\metre} en la brecha lleva la impedancia a \SI{47,9}{\ohm} o \SI{51,9}{\ohm}, es decir, \SI{\pm2}{\ohm}, mientras que en la microstrip un error de \SI{0,05}{\milli\metre} en el ancho produce \SI{\pm0,5}{\ohm}.
+
+Hay además una limitación de las fórmulas. Al llevar el caso límite de brecha muy grande ($S = \SI{50}{\milli\metre}$) con $W = \SI{3}{\milli\metre}$ y $H = \SI{1,6}{\milli\metre}$, la ecuación~\eqref{eq:layout-cpwg-z} da \SI{59,9}{\ohm} mientras que la microstrip equivalente da \SI{52,9}{\ohm}. La diferencia, de más del \SI{13}{\percent}, indica que estas expresiones son aproximadas para pistas anchas frente a $H$. Por eso la Tabla~\ref{tab:layout-cpwg} solo incluye casos con $W \lesssim H$, y sus valores deben confirmarse con un solucionador de campo o con la herramienta del fabricante.
+
+\subsubsection{Vías de costura}
+
+En una CPWG con masas laterales anchas pueden aparecer modos de placas paralelas y resonancias en esas masas, que las vías laterales suprimen. Un ejemplo con simulación y comparación con mediciones, que reproduce un artículo de Sain y Melde, muestra que sin vías la respuesta de una CPW de 1 a \SI{100}{\giga\hertz} se ve limitada por resonancias de las masas laterales por encima de unos \SI{40}{\giga\hertz}~\cite{flexcompute,sain15}. Esa frecuencia está muy por encima de la banda de este proyecto. Para el espaciado entre vías, la única indicación numérica consultada es la de un glosario de RF\@: menor que $\lambda/4$ a la frecuencia máxima, e idealmente menor que $\lambda/10$, con vías simétricas a ambos lados y lo más cerca posible del borde de la brecha~\cite{rfessentialscpwg}. Con $\lambda_g = \SI{393}{\milli\metre}$ a \SI{435}{\mega\hertz}, $\lambda_g/10$ son \SI{39}{\milli\metre} y $\lambda_g/20$, \SI{20}{\milli\metre}, de modo que unas pocas vías por lado cumplen holgadamente. Se eligió $\lambda_g/20$ como criterio conservador; es una elección de este trabajo y no una norma.
+
+Un cálculo propio y aproximado apunta en la misma dirección. Una masa rectangular de \SI{90}{\milli\metre} de lado sobre un plano inferior, en un dieléctrico con $\varepsilon_r = 4$, tiene su primera resonancia de media onda cerca de $c/(2L\sqrt{\varepsilon_r}) \approx \SI{0,8}{\giga\hertz}$. Eso queda cerca del segundo armónico de una portadora de \SI{435}{\mega\hertz} (\SI{870}{\mega\hertz}), que un amplificador no perfectamente lineal sí genera. Es una estimación de orden de magnitud, sin fuente, y debería confirmarse por simulación; justifica en todo caso costurar los bordes de las masas.
+
+\subsection{Otras opciones}\label{sec:layout-otras}
+
+La stripline, con la pista entre dos planos de masa en capas internas, apantalla mejor, pero requiere una placa multicapa con la capa de RF interna y complica el acceso a los componentes. No se desarrolla aquí porque la cadena del PI se compone de componentes de montaje superficial sobre la capa externa. \verificar{si la placa del PI será de dos o de cuatro capas; de eso depende qué espesor de dieléctrico queda entre la pista y su plano de referencia}
+
+%--------------------------------------------------------------------
+\section{Sustratos y apilado}\label{sec:layout-sustratos}
+
+La Tabla~\ref{tab:layout-sustratos} compara un FR-4 de alto $T_g$ con un laminado de RF, usando las hojas de datos de los fabricantes.
+
+\begin{table}[H]
+  \centering
+  \caption[Comparación de un FR-4 y un laminado de RF.]{Propiedades típicas de un FR-4 (Isola FR406~\cite{isolafr406}) y de un laminado de RF (Rogers RO4350B~\cite{rogersro4350b,rogersoutgas}), según los fabricantes.}\label{tab:layout-sustratos}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{4.7cm}>{\raggedright\arraybackslash}p{4.9cm}@{}}
+    \toprule
+    Propiedad & FR406 & RO4350B \\
+    \midrule
+    $\varepsilon_r$ & \num{4,00} a \SI{100}{\mega\hertz}; \num{3,95} a \SI{1}{\giga\hertz} & \num{3,48} $\pm$ \num{0,05} (proceso); \num{3,66} (diseño) \\
+    $\tan\delta$ & \num{0,0130} a \SI{100}{\mega\hertz}; \num{0,0161} a \SI{1}{\giga\hertz} & \num{0,0037} a \SI{10}{\giga\hertz} \\
+    Conductividad térmica & \num{0,3} a \SI{0,4}{\watt\per\metre\per\kelvin} & \SI{0,69}{\watt\per\metre\per\kelvin} \\
+    CTE en $z$ & \ppmC{60} bajo $T_g$; \ppmC{250} sobre $T_g$ & \ppmC{32} (de \SI{-55}{\celsius} a \SI{288}{\celsius}) \\
+    $T_g$ & \SI{170}{\celsius} & no figura en la página consultada \\
+    Coef. térmico de $\varepsilon_r$ & no figura & \ppmC{50} (de \SI{-50}{\celsius} a \SI{150}{\celsius}) \\
+    Desgasificación (TML / CVCM) & sin datos & \SI{0,12}{\percent} / \SI{0,02}{\percent} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Algunas observaciones:
+
+\begin{itemize}
+  \item El $\tan\delta$ del RO4350B está medido a \SI{10}{\giga\hertz} y el del FR406 entre \SI{0,1}{\giga\hertz} y \SI{1}{\giga\hertz}; no son comparables punto a punto, pero el orden de magnitud (cuatro veces menor) es claro. Por lo visto en la Sección~\ref{sec:layout-microstrip}, esto importa poco para un tramo de pista de pocos centímetros a \SI{435}{\mega\hertz}, y más para el factor de calidad de un resonador distribuido.
+  \item La conductividad térmica del RO4350B es casi el doble que la del FR406, aunque ambas son bajas frente a la del cobre; el camino de calor lo dan las vías y los planos (Capítulo~\ref{cap:termica-emi}).
+  \item El coeficiente térmico del $\varepsilon_r$ del RO4350B es de \ppmC{50}. Para una excursión de \SI{100}{\kelvin} (cifra de ejemplo, no un requisito del CubeSat) representa una variación del \SI{0,5}{\percent}, que no es relevante para una línea de \SI{50}{\ohm}. \verificar{el rango de temperatura de operación de la placa, que fijará el equipo del satélite}.
+  \item Hay laminados que combinan una capa fina de material de RF sobre un núcleo de FR-4 para ahorrar costo. Se presenta como práctica habitual, pero no se consultó una fuente sobre ello. \verificar{si el fabricante local acepta apilados híbridos y a qué costo}.
+\end{itemize}
+
+\subsection{Desgasificación}\label{sec:layout-outgassing}
+
+La CDS exige que los materiales cumplan TML $\le$ \SI{1}{\percent} y CVCM $\le$ \SI{0,1}{\percent} (Capítulo~\ref{cap:cds}~\cite{cds14}). El RO4350B figura en el documento de Rogers sobre desgasificación con TML de \SI{0,12}{\percent}, CVCM de \SI{0,02}{\percent} y recuperación de vapor de agua de \SI{0,02}{\percent}, medidos con el método ASTM E595 (\SI{125}{\celsius} a $\le 10^{-6}$\,torr durante \SI{24}{\hour}); el documento recoge datos de la publicación NASA RP-1124, de 1987~\cite{rogersoutgas}. Cumple el criterio con holgura. Para el FR406 no se encontró un dato equivalente, y tampoco para la máscara de soldadura ni para el recubrimiento conformal, que son los otros materiales de la placa. \verificar{TML y CVCM del laminado FR-4, de la máscara de soldadura y de cualquier recubrimiento que use la placa, pidiéndolos al fabricante o buscándolos en la base de datos de desgasificación de la NASA}. El ensayo europeo equivalente es la ECSS-Q-ST-70\nobreakdash-02C~\cite{ecss7002}; la página de la ECSS aclara que los criterios de aceptación dependen de la aplicación y pueden ser más severos que los de la norma, por lo que no basta con un solo valor.
+
+%--------------------------------------------------------------------
+\section{Normas de calificación de placas}\label{sec:layout-normas}
+
+Para placas de uso espacial existen normas específicas de fabricación y calificación:
+
+\begin{itemize}
+  \item La norma ECSS-Q-ST-70\nobreakdash-60C, en su revisión del 30 de abril de 2025, se titula \emph{Qualification and procurement of printed circuit boards}; fija los requisitos que debe cumplir el fabricante, la autoridad de compra y la de calificación, y se declara aplicable a todos los tipos de placa, entre ellos las de RF~\cite{ecss7060}.
+  \item La IPC-6012FS-2024 es el anexo espacial y de aviónica militar de la IPC-6012F; define excepciones a los requisitos de la Clase 3 de esa norma, tanto en criterios de aceptación como en tamaños de muestra y frecuencia de ensayos, para placas rígidas que deben resistir vibración, ciclado térmico extremo y ensayos en tierra~\cite{ipc6012fs}.
+\end{itemize}
+
+Que un CubeSat universitario deba cumplirlas, y en qué grado, es una decisión de proyecto que no se encontró establecida en la CDS consultada. \verificar{con los tutores, si el fabricante local puede entregar una placa con alguna de estas calificaciones o si se tomarán solo como guía de buenas prácticas}.
+
+%--------------------------------------------------------------------
+\section{Reglas de layout para la cadena de RF}\label{sec:layout-reglas}
+
+\subsection{Vías de masa}\label{sec:layout-vias}
+
+La inductancia de una vía se puede estimar con la aproximación de Johnson~\cite{johnsonvia,johnsongraham}
+\begin{equation}\label{eq:layout-via}
+  L \approx 5{,}08\,h\,\bigl[\,\ln\,(4h/d) + 1\,\bigr]\ \si{\nano\henry}
+\end{equation}
+con $h$ y $d$ (largo y diámetro del taladro) en pulgadas. \verificar{la forma exacta de la fórmula~\eqref{eq:layout-via}: la página de Johnson la muestra solo como imagen, y en el texto aparece únicamente la constante de \SI{5,08}{\nano\henry}\,/\,pulgada}. La propia fuente aclara que es una aproximación gruesa, útil para el orden de magnitud (el texto menciona que una vía típica de 63 mil tiene <<solo unos pocos nanohenrios>>). Con esa fórmula, una vía de \SI{0,3}{\milli\metre} en una placa de \SI{1,6}{\milli\metre} resulta en \SI{1,3}{\nano\henry} (cálculo propio), cuya reactancia es de \SI{1,2}{\ohm} a \SI{145}{\mega\hertz} y de \SI{3,6}{\ohm} a \SI{435}{\mega\hertz} (Figura~\ref{fig:layout-vias}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{reactancia_vias.pdf}
+  \caption[Reactancia de vías de masa.]{Reactancia de vías de masa de \SI{0,3}{\milli\metre} en una placa de \SI{1,6}{\milli\metre} (cálculo propio, aproximación de Johnson).}\label{fig:layout-vias}
+\end{figure}
+
+En un circuito de \SI{50}{\ohm}, una impedancia en serie de \SI{3,6}{\ohm} en el retorno de un capacitor o del terminal de masa de un transistor no es despreciable, ya que desplaza la adaptación y reduce la ganancia. Cuatro vías en paralelo la bajan a unos \SI{0,9}{\ohm}, y con un dieléctrico de \SI{0,8}{\milli\metre} la inductancia de cada vía baja a \SI{0,54}{\nano\henry}. De ahí salen dos reglas: colocar varias vías en cada terminal de masa de los componentes de RF, y ubicarlas al lado del pad.
+
+\subsection{Reglas de práctica}
+
+La Tabla~\ref{tab:layout-reglas} resume las reglas propuestas para la cadena filtro--amplificador--filtro y la fuente de cada una. Se distinguen tres orígenes: las que se apoyan en una fuente consultada, las que salen de un cálculo propio de este capítulo y las que son práctica habitual sin una fuente consultada. Estas últimas son las que más conviene revisar.
+
+\begin{table}[H]
+  \centering
+  \caption[Reglas de layout propuestas para la cadena de RF.]{Reglas de layout propuestas para la cadena de RF y origen de cada una.}\label{tab:layout-reglas}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{7.2cm}>{\raggedright\arraybackslash}p{4.3cm}@{}}
+    \toprule
+    Tema & Regla & Origen \\
+    \midrule
+    Plano de referencia & Plano de masa continuo bajo toda pista de RF, sin cortes ni ranuras. Es la condición de existencia de la microstrip y la CPWG\@. & Fuentes~\cite{pozar,steer1,rfessentialscpwg} \\
+    Vías de masa & Varias vías por terminal de masa de RF, junto al pad (Sección~\ref{sec:layout-vias}). & Cálculo propio y~\cite{johnsonvia} \\
+    Costura de masas & Vías entre masas superior e inferior con paso menor que $\lambda_g/20$ y en los bordes de la placa. & Cálculo propio y~\cite{rfessentialscpwg} \\
+    Ancho de pista & Ancho de \SI{50}{\ohm} calculado con el apilado real del fabricante (Tabla~\ref{tab:layout-ms}), y comprobado con su herramienta. & Cálculo propio y~\cite{steer1,kicadcoplanar} \\
+    Orden de la cadena & Disponer filtro, amplificador y filtro en línea recta, con entrada y salida lo más separadas que permita la placa, para limitar el acople y la realimentación. & Práctica, sin fuente consultada \\
+    Aislación & Compartimentos o blindajes entre etapas si la ganancia es alta. & Capítulo~\ref{cap:termica-emi} \\
+    Curvas & Pistas de \SI{50}{\ohm} con ángulos de \SI{45}{\degree} o curvas suaves, no de \SI{90}{\degree}. & Práctica, sin fuente consultada \\
+    Pads y pista & Adaptar el ancho de la pista al pad del componente; una pista de \SI{3,3}{\milli\metre} es muy ancha para un pad 0603 (\textit{taper} o prepreg fino). & Cálculo propio (Tabla~\ref{tab:layout-ms}); práctica \\
+    Desacople de continua & Capacitores de valores distintos en paralelo, cerca del pin de alimentación y con vías propias. & Práctica, sin fuente consultada \\
+    Máscara de soldadura & Incluirla en el cálculo de impedancia; modifica ligeramente $\varepsilon_e$. & Código de KiCad~\cite{kicadcoplanar} \\
+    Cupones de ensayo & Una pista de \SI{50}{\ohm} de prueba en el mismo panel para medir con un analizador. & Práctica, sin fuente consultada \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+%--------------------------------------------------------------------
+\section{Particularidades del entorno espacial}\label{sec:layout-espacio}
+
+\begin{description}
+  \item[Vacío y calor.] Sin convección, el calor de una etapa de potencia solo sale por conducción y radiación. Para el layout implica pads térmicos grandes, vías térmicas bajo el encapsulado y un camino de cobre hasta la estructura; el desarrollo está en el Capítulo~\ref{cap:termica-emi}. La CPWG, que permite apoyar el componente sobre las masas superiores, favorece este camino~\cite{rfessentialscpwg}.
+  \item[Ciclado térmico.] La expansión en $z$ del FR406 (\ppmC{60} bajo $T_g$) es casi el doble que la del RO4350B (\ppmC{32}), mientras que el cobre de las vías metalizadas tiene un CTE bastante menor que el laminado en $z$ (Tabla~\ref{tab:layout-sustratos}); esa diferencia es la que fatiga las vías con los ciclos térmicos. \verificar{el valor de CTE del cobre y el número de ciclos térmicos que se exigirá a la placa}.
+  \item[Desgasificación.] Ver la Sección~\ref{sec:layout-outgassing}: es un requisito de la CDS que alcanza al laminado, la máscara, los recubrimientos y los adhesivos.
+  \item[Estaño puro.] Los acabados de estaño puro pueden generar <<bigotes>> (\emph{whiskers}) que provocan desde derivas hasta cortocircuitos; en vacío, uno de ellos puede vaporizarse y sostener un arco de plasma. La NASA recomienda evitar el estaño puro y considera aceptable alearlo con plomo, en una proporción de al menos \SI{3}{\percent} en peso. Los recubrimientos conformales ayudan, pero se desconocen sus límites~\cite{brusse}. Esto afecta tanto al acabado de la placa como a los terminales de los componentes que se elijan. \verificar{acabado superficial del fabricante, composición de la soldadura y de los terminales}.
+  \item[Recubrimiento conformal.] Un recubrimiento sobre una línea de RF modifica su $\varepsilon_e$ y su impedancia. No se encontró un valor numérico en las fuentes consultadas; si se usa, hay que incluirlo en la simulación.
+\end{description}
+
+%--------------------------------------------------------------------
+\section{Herramientas y validación}\label{sec:layout-herramientas}
+
+Las fórmulas de este capítulo sirven para dimensionar. Antes de fabricar, conviene seguir una secuencia en tres pasos: calcular con una herramienta como el calculador de líneas de KiCad, cuyo código implementa las mismas expresiones~\cite{kicadcoplanar}; consultar al fabricante por el apilado, el $\varepsilon_r$ real y el ancho de pista que garantiza para \SI{50}{\ohm}; y validar el diseño final con un solucionador electromagnético o con la medición de un cupón de prueba. \verificar{qué herramientas de simulación tendrá disponibles el LIADE para el PI}.
+
+%--------------------------------------------------------------------
+\section{Síntesis para el Proyecto Integrador}\label{sec:layout-sintesis}
+
+\begin{itemize}
+  \item Entre \SI{145}{\mega\hertz} y \SI{435}{\mega\hertz} la placa ya no es eléctricamente pequeña, y hay que trabajar con líneas de \SI{50}{\ohm} controladas y masas continuas.
+  \item La microstrip es la opción más simple y menos sensible a tolerancias; la CPWG mejora la aislación y el camino térmico, pero exige brechas del orden de \SI{0,1}{\milli\metre} sobre una placa de \SI{1,6}{\milli\metre}.
+  \item Para tramos de pocos centímetros, las pérdidas de pista son del orden de \SI{0,1}{\decibel}, y el FR-4 es suficiente desde ese punto de vista; los argumentos para un laminado de RF son la estabilidad de $\varepsilon_r$, la menor expansión en $z$ y las pérdidas de resonadores.
+  \item Las vías de masa son un punto crítico: una vía sola equivale a unos \SI{3,6}{\ohm} a \SI{435}{\mega\hertz}.
+  \item Los requisitos de desgasificación se cumplen con holgura para el RO4350B, y quedan por documentar para el FR-4, la máscara y los recubrimientos.
+\end{itemize}

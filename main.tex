@@ -8,7 +8,7 @@
 % ---------- Formato ----------
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{setspace}
-\onehalfspacing
+\onehalfspacing%
 \usepackage{microtype}
 % hyperref se carga UNA sola vez. hypertexnames=false evita el aviso 'destination ... page.1' de la portada
 \usepackage[hidelinks,hypertexnames=false]{hyperref}
@@ -42,6 +42,12 @@
 \author{Agustín Mendes Rosa}
 \date{\today}
 
+% ---------- Macros ----------
+% Marca en negrita lo que hay que contrastar contra la fuente
+\newcommand{\verificar}[1]{\textbf{[VERIFICAR] #1}}
+% Coeficiente por grado Celsius (ppm/°C)
+\newcommand{\ppmC}[1]{\num{#1}\,ppm\,/\,\si{\celsius}}
+
 \begin{document}
 
 % ---------- Portada ----------
@@ -59,7 +65,7 @@
     \vspace{30pt}
     \Large Prácticas Profesionales Supervisadas\\
     \vspace{30pt}
-    {\LARGE \itshape Relevamiento técnico y normativo, estándares espaciales y técnicas de diseño de PCB orientadas a nanosatélites CubeSat\par}
+    {\LARGE \textit{Relevamiento técnico y normativo, estándares espaciales y técnicas de diseño de PCB orientadas a nanosatélites CubeSat}\par}
     \vspace{50pt}
     {\large Alumno: Agustín Mendes Rosa\par}
   \vspace{0.5cm}
@@ -85,8 +91,5 @@
 % ---------- Bibliografía ----------
 \printbibliography[heading=bibintoc,title={Bibliografía}]
 
-% ---------- Anexos ----------
-\appendix
-% \input{anexos/A_ejemplo}
 
 \end{document}

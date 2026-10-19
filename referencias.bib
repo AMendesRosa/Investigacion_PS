@@ -1,4 +1,4 @@
-@manual{cds14,
+  @manual{cds14,
   author       = {{California Polytechnic State University}},
   title        = {{CubeSat Design Specification (CDS) Rev. 14.1 (1U--12U)}},
   number       = {CP-CDS-R14.1},
@@ -167,4 +167,142 @@
   organization = {GitHub},
   url          = {https://github.com/visionspacetec/VST104-Sierra},
   urldate      = {2026-10-18}
+}
+@online{steer1,
+  author       = {Michael Steer},
+  title        = {{Microstrip Transmission Lines}},
+  organization = {Engineering LibreTexts},
+  url          = {https://eng.libretexts.org/Bookshelves/Electrical_Engineering/Electronics/Fundamentals_of_Microwave_and_RF_Design_(Steer)/04:_Planar_Transmission_Lines/4.04:_Microstrip_Transmission_Lines},
+  urldate      = {2026-10-19},
+  note         = {Sección 4.4 de \emph{Fundamentals of Microwave and RF Design}}
+}
+
+@online{steer2,
+  author       = {Michael Steer},
+  title        = {{Microstrip Design Formulas}},
+  organization = {Engineering LibreTexts},
+  url          = {https://eng.libretexts.org/Bookshelves/Electrical_Engineering/Electronics/Microwave_and_RF_Design_II_-_Transmission_Lines_(Steer)/03:_Planar_Transmission_Lines/3.06:_Microstrip_Design_Formulas},
+  urldate      = {2026-10-19},
+  note         = {Sección 3.6 de \emph{Microwave and RF Design II -- Transmission Lines}}
+}
+
+@online{kicadcoplanar,
+  author       = {{KiCad Developers}},
+  title        = {{coplanar.cpp: calculador de líneas de transmisión (código fuente)}},
+  organization = {KiCad EDA},
+  url          = {https://docs.kicad.org/doxygen/common_2transline__calculations_2coplanar_8cpp_source.html},
+  urldate      = {2026-10-19}
+}
+
+@article{ghione83,
+  author       = {G. Ghione and C. Naldi},
+  title        = {Parameters of coplanar waveguides with lower common planes},
+  journaltitle = {Electronics Letters},
+  volume       = {19},
+  number       = {18},
+  pages        = {734--735},
+  year         = {1983},
+  note         = {Citado en el código fuente de KiCad; no consultado directamente}
+}
+
+@online{flexcompute,
+  author       = {{Flexcompute}},
+  title        = {{Grounded co-planar waveguide with via fence}},
+  organization = {Tidy3D documentation},
+  url          = {https://docs.flexcompute.com/rf/latest/examples/grounded-cpw-via-fence/},
+  urldate      = {2026-10-19}
+}
+
+@article{sain15,
+  author       = {A. Sain and K. L. Melde},
+  title        = {Impact of ground via placement in grounded coplanar waveguide interconnects},
+  journaltitle = {IEEE Transactions on Components, Packaging and Manufacturing Technology},
+  volume       = {6},
+  number       = {1},
+  pages        = {136--144},
+  year         = {2015},
+  note         = {Citado en la documentación de Flexcompute; no consultado directamente}
+}
+
+@online{rfessentialscpwg,
+  author       = {{RF Essentials}},
+  title        = {{Grounded Coplanar Waveguide (glosario de RF)}},
+  url          = {https://rfessentials.com/resources/rf-glossary/grounded-coplanar-waveguide/},
+  urldate      = {2026-10-19},
+  note         = {Fuente divulgativa, sin referencias}
+}
+
+@online{rogersro4350b,
+  author       = {{Rogers Corporation}},
+  title        = {{RO4350B Laminates}},
+  url          = {https://rogerscorp.com/advanced-electronics-solutions/ro4000-series-laminates/ro4350b-laminates},
+  urldate      = {2026-10-19}
+}
+
+@manual{rogersoutgas,
+  author       = {{Rogers Corporation}},
+  title        = {{Low Outgassing Characteristics of Rogers Laminates Approved for Spacecraft Applications}},
+  number       = {92-304},
+  url          = {https://www.rogerscorp.com/-/media/project/rogerscorp/documents/advanced-electronics-solutions/english/properties---detailed-characteristics/low-outgassing-characteristics-of-rogers-laminates-approved-for-spacecraft-applications.pdf},
+  urldate      = {2026-10-19}
+}
+
+@manual{isolafr406,
+  author       = {{Isola Group}},
+  title        = {{FR406 Standard Loss, High Tg Epoxy Laminate and Prepreg}},
+  note         = {Hoja de datos, Rev.~C (enero de 2023), copia alojada por un distribuidor},
+  url          = {https://www.epectec.com/downloads/Isola-FR406-Data-Sheet.pdf},
+  urldate      = {2026-10-19}
+}
+
+@manual{ecss7060,
+  author       = {{European Cooperation for Space Standardization}},
+  title        = {{ECSS-Q-ST-70-60C Rev.1: Qualification and procurement of printed circuit boards}},
+  year         = {2025},
+  month        = apr,
+  url          = {https://ecss.nl/standard/ecss-q-st-70-60c-rev-1-qualification-and-procurement-of-printed-circuit-boards-30-april-2025/},
+  urldate      = {2026-10-19},
+  note         = {Se consultó la página descriptiva, no el texto completo}
+}
+
+@manual{ecss7002,
+  author       = {{European Cooperation for Space Standardization}},
+  title        = {{ECSS-Q-ST-70-02C: Thermal vacuum outgassing test for the screening of space materials}},
+  year         = {2008},
+  month        = nov,
+  url          = {https://ecss.nl/standard/ecss-q-st-70-02c-thermal-vacuum-outgassing-test-for-the-screening-of-space-materials/},
+  urldate      = {2026-10-19},
+  note         = {Se consultó la página descriptiva, no el texto completo}
+}
+
+@manual{ipc6012fs,
+  author       = {{IPC}},
+  title        = {{IPC-6012FS-2024: Space and Military Avionics Applications Addendum to IPC-6012F, Qualification and Performance Specification for Rigid Printed Boards}},
+  url          = {https://webstore.ansi.org/standards/ipc/ipc6012fs2024},
+  urldate      = {2026-10-19},
+  note         = {Se consultó la página de la tienda, no el texto completo}
+}
+
+@online{brusse,
+  author       = {Jay Brusse},
+  title        = {{Tin Whiskers: Revisiting an Old Problem}},
+  organization = {NASA Electronic Parts and Packaging Program},
+  url          = {https://nepp.nasa.gov/DocUploads/2B1FC8E9-4AF1-4F2F-837213A632C25CE9/Tin-Whiskers.pdf},
+  urldate      = {2026-10-19}
+}
+
+@online{johnsonvia,
+  author       = {Howard Johnson},
+  title        = {{Via Inductance}},
+  organization = {High-Speed Digital Design Online Newsletter, vol.~6, n.º~4},
+  year         = {2003},
+  url          = {https://www.sigcon.com/Pubs/news/6_04.htm},
+  urldate      = {2026-10-19}
+}
+
+@book{johnsongraham,
+  author    = {Howard Johnson and Martin Graham},
+  title     = {High-Speed Digital Design: A Handbook of Black Magic},
+  publisher = {Prentice Hall},
+  year      = {1993}
 }

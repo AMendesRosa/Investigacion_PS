@@ -8,8 +8,10 @@
 % ---------- Formato ----------
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{setspace}
-\onehalfspacing
+\onehalfspacing 
 \usepackage{microtype}
+\usepackage[hidelinks,hypertexnames=false]{hyperref}
+\usepackage{xurl}
 
 % ---------- Matemática y unidades ----------
 \usepackage{amsmath,amssymb}
@@ -19,13 +21,20 @@
 % ---------- Figuras y tablas ----------
 \usepackage{graphicx}
 \graphicspath{{Figuras/}}
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage{caption}
 \usepackage{float}
+\usepackage{circuitikz}
 
 % ---------- Bibliografía (IEEE, backend biber) ----------
+\usepackage{csquotes}
 \usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
 \addbibresource{referencias.bib}
+
+  \setcounter{biburlnumpenalty}{100}
+  \setcounter{biburlucpenalty}{100}
+  \setcounter{biburllcpenalty}{100}
 
 % ---------- Enlaces (cargar al final) ----------
 \usepackage[hidelinks]{hyperref}
@@ -39,23 +48,28 @@
 
 % ---------- Portada ----------
 \begin{titlepage}
-  \centering
-  {\large Universidad Nacional de Córdoba\\
-  Facultad de Ciencias Exactas, Físicas y Naturales\\
-  Ingeniería Electrónica\par}
-  \vspace{2cm}
-  {\Large\bfseries Práctica Supervisada\par}
-  \vspace{1cm}
-  {\Large\itshape Relevamiento técnico y normativo, estándares espaciales y técnicas de diseño de PCB orientadas a nanosatélites CubeSat\par}
-  \vspace{2cm}
-  {\large Alumno: Agustín Mendes Rosa\par}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+    \node[opacity=0.2,anchor=center] at (current page.center)
+        {\includegraphics[width=0.9\paperwidth]{decoracion_a.png}};
+\end{tikzpicture}
+\begin{center}
+    \includegraphics[width=15cm]{unc_fcefyn_logo.png} \\ [0.5cm]
+    \LARGE Universidad Nacional de Córdoba \\ [0.5cm]
+    \large Facultad de Ciencias Exactas, Físicas y Naturales \\ [0.5 cm]
+    \large Laboratorio de Investigación Aplicada y Desarrollo \\
+    \vspace{30pt}
+    \Large Prácticas Profesionales Supervisadas\\
+    \vspace{30pt}
+    {\LARGE \itshape Relevamiento técnico y normativo, estándares espaciales y técnicas de diseño de PCB orientadas a nanosatélites CubeSat\par}
+    \vspace{50pt}
+    {\large Alumno: Agustín Mendes Rosa\par}
   \vspace{0.5cm}
-  {\large Tutor de la entidad receptora: Mayco N. Orellano\\
+  {\large Tutor del laboratorio: Mayco N. Orellano\\
   Tutor de carrera: Carlos R. Leguizamón\par}
-  \vspace{0.5cm}
-  {\large Laboratorio de Investigación Aplicada y Desarrollo (LIADE)\par}
   \vfill
-  {\large Córdoba, \the\year\par}
+  {\large Córdoba, República Argentina \\ \the\year\par}
+\end{center}
 \end{titlepage}
 
 \tableofcontents

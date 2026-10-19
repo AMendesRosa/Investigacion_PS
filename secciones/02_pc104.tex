@@ -1,8 +1,203 @@
 \chapter{Arquitectura de apilamiento PC/104}
 \label{cap:pc104}
 
-\section{Dimensiones y fijaciones}
+% Macro para marcar lo que hay que contrastar contra la fuente (se ve en negrita)
+\providecommand{\verificar}[1]{\textbf{[VERIFICAR: #1]}}
+
+Este capítulo estudia el formato PC/104, que se usa como estándar de facto para apilar placas dentro de un CubeSat. El objetivo es obtener las dimensiones de la placa, los agujeros de fijación, los conectores y la asignación de pines que condicionan el diseño del PCB del transponder.
+
+%--------------------------------------------------------------------
+\section{El estándar PC/104 y su rol en los CubeSat}
+\label{sec:pc104-general}
+
+PC/104 es una familia de estándares para computadoras embebidas, definidos por el PC/104 Embedded Consortium, que especifican tanto un factor de forma como un bus. Su nombre proviene de las 104 conexiones del bus ISA original~\cite{pc104v24,pc104wiki}. Su principal característica es el apilamiento: los módulos se montan unos sobre otros mediante un conector de bus que atraviesa la placa y separadores en las cuatro esquinas, sin necesidad de \emph{backplane}~\cite{pc104v24}. La familia incluye variantes posteriores (PC/104-Plus, que agrega el bus PCI, PCI-104 y PCI/104-Express), que mantienen el mismo tamaño de módulo~\cite{pc104wiki}.
+
+\subsection{Factor de forma frente a bus}
+\label{subsec:pc104-formafactor}
+
+Es importante distinguir dos cosas. La especificación PC/104 define como \emph{compliant} a los dispositivos que cumplen todos los aspectos no opcionales, mecánicos y eléctricos, y como \emph{bus-compatible} a los que no respetan las dimensiones pero proveen un conector de bus que sí cumple la especificación~\cite[Sec.~4]{pc104v24}. En el ámbito CubeSat, la tienda CubeSatShop aclara que la mayoría de los productos son <<bus-compatible>>: algunas especificaciones difieren levemente del estándar (por ejemplo, la posición del conector), y puede haber diferencias entre fabricantes~\cite{cubesatshopfaq}.
+
+Cuando se habla de que un CubeSat <<usa PC/104>>, en la práctica se refiere al tamaño de la placa, la ubicación de los agujeros de montaje y el conector de $2\times 2\times 26$ pines. Los CubeSats no adoptan la señalización ni los protocolos del estándar PC/104, y los fabricantes de componentes tampoco estandarizan el uso de los pines: siguieron las convenciones de otros~\cite{amsatpc104}. Esta última fuente es el comentario de un participante en una lista de correo de AMSAT, de modo que debe tomarse como una referencia informal; coincide, sin embargo, con lo que se observa en las hojas de datos de los fabricantes (Secciones~\ref{sec:pc104-pines} y~\ref{sec:pc104-implicancias}). La propia CDS no menciona el PC/104 en su texto (Capítulo~\ref{cap:cds}); es una convención de la industria, y no un requisito de lanzamiento.
+
+%--------------------------------------------------------------------
+\section{Dimensiones geométricas y orificios de fijación}
 \label{sec:pc104-dimensiones}
 
-\section{Conectores y distribución de pines}
+La Tabla~\ref{tab:pc104-dim} resume la geometría del módulo según el Apéndice~A de la especificación PC/104 v2.4~\cite{pc104v24}. Las versiones de 8 y 16 bits tienen el mismo patrón de agujeros desde la versión 2.1 de la especificación~\cite{pc104v24}.
+
+\begin{table}[H]
+  \centering
+  \caption{Geometría del módulo PC/104 (especificación v2.4, Apéndice~A).}
+  \label{tab:pc104-dim}
+  \begin{tabular}{lcc}
+    \toprule
+    Parámetro & Pulgadas & Milímetros \\
+    \midrule
+    Ancho del módulo           & 3,550 & 90,2 \\
+    Largo del módulo           & 3,775 & 95,9 \\
+    Diámetro del agujero       & 0,125 & 3,2  \\
+    Diámetro del pad de montaje & 0,250 & 6,4  \\
+    Cantidad de agujeros       & \multicolumn{2}{c}{4 (en las esquinas)} \\
+    Separación típica entre módulos apilados & 0,6 & 15 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\verificar{la separación entre centros de agujeros de montaje del dibujo (valores 3,250\,in $\approx$ 82,6\,mm y 3,350\,in $\approx$ 85,1\,mm aparecen en el Apéndice~A, pero hay que confirmar a qué eje corresponde cada una y las distancias del agujero a los bordes, mirando el dibujo de la figura)}
+
+La especificación ofrece dos opciones de bus según si los conectores P1 y P2 atraviesan el módulo (\emph{stackthrough}) o no. Si se combinan módulos de 8 y 16 bits en una pila, los de 16 bits deben ir por debajo de los de 8 bits~\cite[Sec.~2.2]{pc104v24}. El dibujo de la especificación también define regiones donde pueden sobresalir los conectores de entrada/salida (\emph{I/O}) sobre el borde de la placa.
+
+\subsection{Variaciones en placas para CubeSat}
+\label{subsec:pc104-variaciones}
+
+Las placas comerciales para CubeSat respetan el patrón de agujeros, pero el contorno varía levemente entre fabricantes. Por ejemplo, la placa de prototipado de Pumpkin (CubeSat Kit) tiene un ancho de \SI{96}{\milli\metre}, un largo de \SI{90}{\milli\metre} y un espesor de \SI{1,6}{\milli\metre}, con una altura de componentes de \SI{11}{\milli\metre} sobre la placa y \SI{2}{\milli\metre} por debajo; el patrón de agujeros de esquina coincide con el de PC/104~\cite{pumpkinprotoboard}. La placa de prototipado de ArduSat mide $\SI{95,45}{\milli\metre}\times\SI{90,3}{\milli\metre}$ y tiene una masa de \SI{25}{\gram} (sin conectores), con \SI{42}{\gram} ensamblada~\cite{ardusat}. Pumpkin indica además que la altura de los pines pasantes (\emph{stackthrough}) de los conectores H1 y H2 es de \SI{10,4}{\milli\metre}~\cite{pumpkinprotoboard}.
+
+Esto tiene consecuencias de diseño: el espacio vertical por placa y la altura máxima de componentes están acotados, tanto por la separación de la pila como por la altura de los conectores. Los valores concretos dependen del fabricante del resto de la pila y deben acordarse con el equipo que arma el satélite.
+
+%--------------------------------------------------------------------
+\section{Conectores}
+\label{sec:pc104-conectores}
+
+\subsection{Conector PC/104 original}
+\label{subsec:pc104-conector-orig}
+
+El bus PC/104 tiene dos conectores: P1/J1, de 64 pines (2 filas de 32: A y B), y P2/J2, de 40 pines (2 filas de 20: C y D), que suman las 104 conexiones del nombre~\cite[Sec.~1 y Apéndice~B]{pc104v24}. Los módulos de 8 bits solo necesitan el conector P1. La Tabla~\ref{tab:pc104-conector-esp} resume las especificaciones del conector del Apéndice~D de la especificación.
+
+\begin{table}[H]
+  \centering
+  \caption{Especificaciones del conector de bus PC/104 (v2.4, Apéndice~D).}
+  \label{tab:pc104-conector-esp}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{10cm}@{}}
+    \toprule
+    Parámetro & Valor \\
+    \midrule
+    Capacidad de corriente & \SI{1}{\ampere} continuo por pin \\
+    Resistencia de contacto & $<\SI{30}{\milli\ohm}$ \\
+    Rigidez dieléctrica & \SI{1000}{\volt} (CA) \\
+    Resistencia de aislación & $\geq \SI{5000}{\mega\ohm}$ \\
+    Temperatura de operación & de \SI{-55}{\celsius} a \SI{+85}{\celsius} \\
+    Durabilidad & 50 ciclos mínimo \\
+    Carcasa & Termoplástico de alta temperatura, UL 94-V0 \\
+    Contacto & Bronce fosforoso; interfaz hembra con oro duro (mín. 20 microp.) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Conector del CubeSat Kit Bus (H1 y H2)}
+\label{subsec:pc104-cskb}
+
+En los CubeSats se usa un conector propio, el \emph{CubeSat Kit Bus} (CSKB), creado por Pumpkin. Consiste en dos conectores, H1 y H2, de $2\times 26$ pines cada uno (104 pines en total), ubicados en el mismo lugar que los conectores PC/104 sobre la placa~\cite{pumpkinmb,cubesatshopfaq,amsatpc104}. Según CubeSatShop, ambos son de la marca Samtec~\cite{cubesatshopfaq}. Pumpkin especifica una corriente máxima de \SI{3}{\ampere} por pin del conector CSKB~\cite{pumpkinmb}, frente a \SI{1}{\ampere} del conector PC/104 original (Tabla~\ref{tab:pc104-conector-esp}). Esta diferencia es relevante para dimensionar la alimentación (Sección~\ref{sec:pc104-implicancias}).
+
+%--------------------------------------------------------------------
+\section{Distribución de pines}
 \label{sec:pc104-pines}
+
+\subsection{PC/104 original (ISA)}
+\label{subsec:pc104-pines-isa}
+
+Las señales del PC/104 original son idénticas a las del bus ISA. Las únicas que importan aquí son las de alimentación y masa, que se resumen en la Tabla~\ref{tab:pc104-isa-pwr}~\cite[Apéndice~B]{pc104v24}. La especificación también fija la potencia disponible por módulo (Tabla~\ref{tab:pc104-alim}), con tensiones medidas en los pines del conector a \SI{\pm5}{\percent}.
+
+\begin{table}[H]
+  \centering
+  \caption{Pines de alimentación y masa del bus PC/104 (v2.4, Apéndice~B).}
+  \label{tab:pc104-isa-pwr}
+  \begin{tabular}{ll}
+    \toprule
+    Señal & Pines \\
+    \midrule
+    $+5$\,V   & B3, B29, D16 \\
+    $-5$\,V   & B5 \\
+    $+12$\,V  & B9 \\
+    $-12$\,V  & B7 \\
+    GND       & B1, B31, A32, B32, C0, D0, D18, D19 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{Requisitos de alimentación por módulo PC/104 (v2.4, Tabla~1).}
+  \label{tab:pc104-alim}
+  \begin{tabular}{lccc}
+    \toprule
+    Tensión nominal & Máxima & Mínima & Corriente máxima \\
+    \midrule
+    $+12$\,V & $+12,6$\,V & $+11,4$\,V & \SI{1,0}{\ampere} \\
+    $+5$\,V  & $+5,25$\,V & $+4,75$\,V & \SI{2,0}{\ampere} \\
+    $-5$\,V  & $-4,75$\,V & $-5,25$\,V & \SI{0,2}{\ampere} \\
+    $-12$\,V & $-11,4$\,V & $-12,6$\,V & \SI{0,3}{\ampere} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{CubeSat Kit Bus}
+\label{subsec:pc104-pines-cskb}
+
+La asignación de pines de H1 y H2 no forma parte de ningún estándar formal: es la convención de Pumpkin, que otros fabricantes siguieron con variantes~\cite{amsatpc104}. Por ejemplo, la hoja de opciones de la computadora de a bordo CubeComputer (CubeSpace) permite configurar algunos pines (bus I2C secundario en H1-21 y H1-23, CAN en H1-1 y H1-3, alimentación de 3,3\,V siempre activa en H2-27 y H2-28)~\cite{cubespace}. La Tabla~\ref{tab:pc104-cskb} lista los pines relevantes para este proyecto según las hojas de datos de Pumpkin.
+
+\begin{table}[H]
+  \centering
+  \caption{Pines principales del CubeSat Kit Bus (convención de Pumpkin).}
+  \label{tab:pc104-cskb}
+  \small
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{8.9cm}@{}}
+    \toprule
+    Pin(es) & Señal & Descripción \\
+    \midrule
+    H2.25, H2.26 & +5V\_SYS & Alimentación de sistema de $+5$\,V, provista por el EPS~\cite{pumpkinadacs} \\
+    H2.27, H2.28 & VCC\_SYS & Alimentación de sistema de $+3,3$\,V, normalmente generada por el EPS~\cite{pumpkinadacs} \\
+    H2.29, H2.30, H2.32 & GND & Masa digital~\cite{pumpkinadacs} \\
+    H2.31 & AGND & Masa analógica~\cite{pumpkineps} \\
+    H2.45, H2.46 & VBATT & Tensión de batería, después del interruptor RBF~\cite{pumpkinbm} \\
+    H1.41 & SDA\_SYS & Datos del bus I2C~\cite{pumpkinadacs} \\
+    H1.43 & SCL\_SYS & Reloj del bus I2C~\cite{pumpkinadacs} \\
+    H1.32 & +5V\_USB & Alimentación USB de $+5$\,V (no usada en muchos módulos)~\cite{pumpkinadacs} \\
+    H1.33 & +5V\_SW & Alimentación conmutada de $+5$\,V~\cite{pumpkinadacs} \\
+    H1.42 & VBACKUP & Alimentación de respaldo~\cite{pumpkinadacs} \\
+    H1.34--H1.38 & -RST, -CTS, -RTS, -DSR, -DTR (\_MHX) & Interfaz de control del transceptor MHX de Pumpkin~\cite{pumpkinadacs} \\
+    H1.44--H1.46 & RSVD0--RSVD2 & Reservados para uso futuro~\cite{pumpkindb} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\verificar{pines H2.33 a H2.36 (señales de los interruptores RBF y de lanzamiento: LS\_NC, LS\_NO, RBF\_NC, RBF\_NO); las hojas de Pumpkin consultadas~\cite{pumpkineps,pumpkinfm430} las nombran pero el texto extraído no permitió asociar cada señal a su pin}
+
+Las hojas de datos de Pumpkin son de 2008 a 2014 y varían entre módulos, por lo que conviene verificar la asignación contra la hoja de datos del módulo de energía (EPS) y de la computadora de a bordo que se use en el satélite de la facultad.
+
+%--------------------------------------------------------------------
+\section{Implicancias para el transponder}
+\label{sec:pc104-implicancias}
+
+Esta sección es una interpretación propia, a validar con el tutor y con el equipo que define el resto del satélite.
+
+\begin{table}[H]
+  \centering
+  \caption[Aspectos de PC/104 con impacto sobre el PCB del transponder]{Aspectos de PC/104 con impacto sobre el diseño del PCB del transponder (interpretación propia).}
+  \label{tab:pc104-impacto}
+  \small
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{5.6cm}>{\raggedright\arraybackslash}p{6.6cm}@{}}
+    \toprule
+    Aspecto & Dato del estándar o de las hojas de datos & Impacto sobre el diseño \\
+    \midrule
+    Contorno y agujeros & Módulo de \SI{90,2}{\milli\metre} $\times$ \SI{95,9}{\milli\metre} con 4 agujeros de \SI{3,2}{\milli\metre}. & El PCB completo (receptor, mezclador, amplificación) debe caber en ese contorno y respetar el patrón de agujeros. Los agujeros también serán la vía de fijación mecánica y de conducción térmica hacia la estructura. \\
+    Conectores H1/H2 & $2\times 26$ pines cada uno, \SI{3}{\ampere} por pin; pines pasantes de \SI{10,4}{\milli\metre}. & Reservar la zona de los conectores (huella, altura y zona libre de componentes) y evitar rutas de RF cerca de ellos. \\
+    Alimentación & +5V\_SYS, VCC\_SYS ($3,3$\,V) y VBATT, cada uno en 2 pines. & Elegir la tensión de alimentación del PA y repartir la corriente entre pines. La elección depende del EPS del satélite. \\
+    Control & I2C en H1.41 y H1.43. & Candidato para la interfaz de comando del transponder (por ejemplo, habilitar o inhibir la cadena de RF, ver Capítulo~\ref{cap:cds}). \\
+    Altura & Separación típica de \SI{15}{\milli\metre} entre módulos en la especificación; \SI{11}{\milli\metre} de altura de componentes en la placa de Pumpkin. & Limita la altura de blindajes, inductores, conectores y del disipador del PA. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Tres puntos quedan pendientes de definición con el equipo del satélite: qué convención de pines (CSKB u otra) se va a adoptar, qué alimentaciones del bus se usarán para la cadena de RF y qué separación real entre placas tendrá la pila. Sin esos datos, la altura máxima de componentes y la distribución de corriente por los pines no pueden fijarse.
+
+%--------------------------------------------------------------------
+\section{Recursos abiertos de referencia}
+\label{sec:pc104-recursos}
+
+Como ejemplo práctico de una placa PC/104 para CubeSat diseñada en KiCad, existe un repositorio abierto del proyecto VST104 (placa \emph{Sierra}, una computadora de a bordo), que incluye su esquemático y su asignación del encabezado PC/104~\cite{vst104}. Puede servir para ver cómo se resuelven en la práctica el contorno, la huella de los conectores y la asignación de pines.
+
+%--------------------------------------------------------------------
+\section{Síntesis}
+\label{sec:pc104-sintesis}
+
+PC/104 define un contorno de módulo de \SI{90,2}{\milli\metre} $\times$ \SI{95,9}{\milli\metre}, cuatro agujeros de fijación y un bus apilable de 104 pines. En los CubeSats se adopta el contorno y el patrón de agujeros, pero el bus eléctrico real es el CubeSat Kit Bus, cuya asignación de pines es una convención sin respaldo normativo y varía entre fabricantes. Para el transponder, esto implica diseñar una placa que respete el contorno, los agujeros y la zona de conectores, y definir con el equipo del satélite la convención de pines, las alimentaciones y la separación entre placas.

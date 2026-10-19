@@ -51,3 +51,5 @@ _minted*/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+"latex-workshop.linting.chktex.exec.args": ["-wall","-n22","-n30","-e16","-q","-n1","-n2","-n6","-n8","-n13","-n24","-n36"]

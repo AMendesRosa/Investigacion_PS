@@ -1,27 +1,23 @@
 \documentclass[12pt,a4paper]{report}
 
-% ---------- Idioma y codificación ----------
-\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 
-% ---------- Formato ----------
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{setspace}
 \onehalfspacing%
 \setlength{\emergencystretch}{3em}
-\hbadness=3000 % no avisar por renglones apenas estirados
+\hbadness=3000 
 \usepackage{microtype}
-% hyperref se carga UNA sola vez. hypertexnames=false evita el aviso 'destination ... page.1' de la portada
+
 \usepackage[hidelinks,hypertexnames=false]{hyperref}
 \usepackage{xurl}
 
-% ---------- Matemática y unidades ----------
 \usepackage{amsmath,amssymb}
 \usepackage{siunitx}
 \sisetup{output-decimal-marker={,}, per-mode=symbol}
 
-% ---------- Figuras y tablas ----------
 \usepackage{graphicx}
 \graphicspath{{Figuras/}}
 \usepackage{array}
@@ -30,7 +26,6 @@
 \usepackage{float}
 \usepackage{circuitikz}
 
-% ---------- Bibliografía (IEEE, backend biber) ----------
 \usepackage{csquotes}
 \usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
 \addbibresource{referencias.bib}
@@ -39,7 +34,6 @@
 \setcounter{biburllcpenalty}{100}
 
 
-% ---------- Datos del documento ----------
 \title{Relevamiento técnico y normativo, estándares espaciales y técnicas de diseño de PCB orientadas a nanosatélites CubeSat}
 \author{Agustín Mendes Rosa}
 \date{\today}
@@ -52,7 +46,6 @@
 
 \begin{document}
 
-% ---------- Portada ----------
 \begin{titlepage}
 \thispagestyle{empty}
 \begin{tikzpicture}[remember picture,overlay]
@@ -91,7 +84,8 @@
 \input{secciones/05_conclusiones}
 
 % ---------- Bibliografía ----------
-\printbibliography[heading=bibintoc,title={Bibliografía}]
+\defbibnote{verificacion}{Los enlaces fueron verificados por última vez el 19 de octubre de 2026.}
+\printbibliography[heading=bibintoc,title={Bibliografía}, prenote=verificacion]
 
 
 \end{document}

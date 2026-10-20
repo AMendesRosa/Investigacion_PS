@@ -1,19 +1,24 @@
 \chapter{Estándar CubeSat y especificación CDS}\label{cap:cds}
 
-Este capítulo resume la \emph{CubeSat Design Specification} (CDS), Rev.~14.1, el documento que define las características físicas, eléctricas y operativas de un CubeSat. El objetivo es identificar qué restricciones impone el estándar al transponder de este proyecto, en particular a la cadena de amplificación y a la placa que la contiene. Salvo indicación contraria, los números de sección, valores y tablas citados provienen de la CDS~\cite{cds14}.
+Este capítulo resume la \emph{CubeSat Design Specification} (CDS), Rev.~14.1, el documento que define las características físicas, eléctricas y operativas de un CubeSat. El objetivo es identificar qué restricciones impone el estándar al transponder de este proyecto, en particular a la cadena de amplificación y a la placa que la contiene.
 
-%--------------------------------------------------------------------
 \section{Origen, propósito y alcance del estándar}\label{sec:cds-general}
 
 El proyecto CubeSat nació en 1999 como una colaboración entre el Prof.~Jordi Puig-Suari (Cal Poly, San Luis Obispo) y el Prof.~Bob Twiggs (Laboratorio de Desarrollo de Sistemas Espaciales de Stanford). Buscaba reducir el costo y el tiempo de desarrollo, facilitar el acceso al espacio y sostener una alta frecuencia de lanzamientos~\cite[Sec.~1.1]{cds14}.
 
-Un CubeSat es un satélite que adopta un tamaño y un factor de forma estandarizados, cuya unidad se denomina <<U>>. Un CubeSat de 1U es un cubo de \SI{10}{\centi\metre} de lado con una masa de hasta \SI{2}{\kilo\gram}~\cite[Sec.~1.1]{cds14}. El estándar cubre configuraciones de 1U a 12U y, como objetivo secundario, informa sobre los dispensadores (desplegadores) disponibles y sus interfaces.
+Un CubeSat es un satélite que adopta un tamaño y un factor de forma estandarizados, cuya unidad se denomina <<U>>. Un CubeSat de 1U es un cubo de \SI{10}{\centi\metre} de lado con una masa de hasta \SI{2}{\kilo\gram}~\cite[Sec.~1.1]{cds14}. El estándar cubre configuraciones de 1U a 12U y, como objetivo secundario, informa sobre los dispensadores/desplegadores disponibles y sus interfaces.
 
-La Rev.~14 (julio de 2020) reemplazó a la Rev.~13 y a la CDS de 6U, incorporó las configuraciones de 6U y 12U y pasó de un conjunto de requisitos rígidos a un documento más cercano a una guía de diseño. La Rev.~14.1 (febrero de 2022) eliminó la marca de borrador, actualizó la información de dispensadores y agregó aclaraciones en las secciones~2 y~3~\cite{cds14,cdsanuncio}. Según el sitio del programa CubeSat, la Rev.~14.1 es la versión vigente~\cite{cubesatinfo}.
+La Rev.~14 (julio de 2020) reemplazó a la Rev.~13 e incorporó las configuraciones de 6U y 12U y pasó de un conjunto de requisitos rígidos a un documento más cercano a una guía de diseño. Según el sitio del programa CubeSat, la Rev.~14.1 (febrero de 2022) es la versión vigente, en la cual se actualizó la información de desplegadores, y se agregaron aclaraciones en las secciones~2 y~3~\cite[Rev. 14 Change Summary]{cds14}.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.6\textwidth]{cds_familia.png}}
+  \caption{La familia CubeSat actual (1U – 12U)~\cite[Sec. 1.1]{cds14}.}\label{fig:cds-family}
+\end{figure}
 
 \subsection{Jerarquía normativa y lenguaje de la especificación}\label{subsec:cds-jerarquia}
 
-Los requisitos de la CDS están pensados para el diseño preliminar y se redactan de forma conservadora, para maximizar la compatibilidad con cualquier vehículo de lanzamiento. Una vez que el satélite está asignado a un lanzamiento, los requisitos del proveedor de lanzamiento (\emph{Launch Provider}) prevalecen sobre los de la CDS\@. Aun así, un diseño que cumpla la CDS debería cumplir la mayoría de los requisitos de los proveedores, y cada desvío reduce las posibilidades de encontrar una oportunidad de lanzamiento~\cite[Secs.~1.3 y 1.4]{cds14}.
+Los requisitos de la CDS están pensados para el diseño preliminar, redactados de forma conservadora para maximizar la compatibilidad con cualquier vehículo de lanzamiento. Una vez que el satélite está asignado a un lanzamiento, los requisitos del \emph{Launch Provider} prevalecen sobre los de la CDS\@. Aun así, un diseño que cumpla la CDS debería cumplir la mayoría de los requisitos de los proveedores, y cada desvío reduce las posibilidades de encontrar una oportunidad de lanzamiento~\cite[Secs.~1.3 y 1.4]{cds14}.
 
 La CDS distingue cuatro términos en sus especificaciones~\cite[Sec.~1.6]{cds14}:
 \begin{itemize}
@@ -23,63 +28,58 @@ La CDS distingue cuatro términos en sus especificaciones~\cite[Sec.~1.6]{cds14}
   \item \textbf{Note} (<<nota>>): consejo orientativo.
 \end{itemize}
 
-%--------------------------------------------------------------------
-\section{Configuraciones y el CubeSat 1U}\label{sec:cds-configuraciones}
 
-La Tabla~\ref{tab:cds-masa-cg} resume la masa típica máxima y los rangos admisibles del centro de gravedad (CG) para cada configuración, medidos desde el centro geométrico~\cite[Sec.~2.2.10 y 2.2.11, Tablas~1 y~2]{cds14}. La CDS aclara que se pueden evaluar masas mayores caso por caso, y que la masa admisible depende de las capacidades del dispensador.
-
-\begin{table}[H]
-  \centering
-  \caption[Masa y centro de gravedad por configuración (CDS Rev.~14.1)]{Masa típica máxima y rango admisible del centro de gravedad por configuración (CDS Rev.~14.1, Tablas~1 y~2).}\label{tab:cds-masa-cg}
-  \setlength{\tabcolsep}{5pt}
-  \begin{tabular}{lcccc}
-    \toprule
-    Configuración & Masa [\si{\kilo\gram}] & X [\si{\centi\metre}] & Y [\si{\centi\metre}] & Z [\si{\centi\metre}] \\
-    \midrule
-    1U   & 2,00  & $\pm 2$   & $\pm 2$   & $\pm 2$   \\
-    1,5U & 3,00  & $\pm 2$   & $\pm 2$   & $\pm 3$   \\
-    2U   & 4,00  & $\pm 2$   & $\pm 2$   & $\pm 4{,}5$ \\
-    3U   & 6,00  & $\pm 2$   & $\pm 2$   & $\pm 7$   \\
-    6U   & 12,00 & $\pm 4{,}5$ & $\pm 2$ & $\pm 7$   \\
-    12U  & 24,00 & $\pm 4{,}5$ & $\pm 4{,}5$ & $\pm 7$ \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-Para el 1U, la masa máxima es de \SI{2}{\kilo\gram} y el CG debe quedar dentro de una caja de $\pm\SI{2}{\centi\metre}$ en cada eje. Esto es relevante para el diseño de la placa: la distribución de masas (batería, placas apiladas, PA con su disipador) afecta directamente el CG del satélite completo.
-
-% Sugerencia: agregar en Figuras/ el dibujo del 1U del Apéndice B de la CDS y la Figura 2 (familia CubeSat).
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[width=0.8\textwidth]{cds_1u_dibujo.png}
-%   \caption{Dibujo de especificación del CubeSat 1U (CDS Rev.~14.1, Apéndice~B)~\cite{cds14}.}
-%   \label{fig:cds-1u}
-% \end{figure}
-
-%--------------------------------------------------------------------
 \section{Especificaciones generales}\label{sec:cds-generales}
 
-La sección~2.1 de la CDS reúne requisitos de seguridad y compatibilidad aplicables a todo el satélite~\cite[Sec.~2.1]{cds14}:
+La CDS reúne requisitos de seguridad y compatibilidad aplicables a todo el satélite~\cite[Sec.~2.1]{cds14}:
 
 \begin{itemize}
-  \item \textbf{Integridad:} ninguna parte puede desprenderse del satélite durante el lanzamiento, la eyección o la operación (2.1.1).
-  \item \textbf{Pirotecnia, propulsión y materiales peligrosos:} deben cumplir el manual de seguridad de rango AFSPCMAN~91\nobreakdash-710, Vol.~3 (2.1.2, 2.1.3 y 2.1.6). Los sistemas de propulsión requieren al menos tres inhibiciones de activación (2.1.4). Este proyecto no incluye propulsión.
-  \item \textbf{Baterías:} se recomienda considerar los límites de la FAA para baterías transportadas por pasajeros; por ejemplo, \SI{100}{\watt\hour} por batería de ion-litio de consumo (2.1.5).
-  \item \textbf{Desgasificación (\emph{outgassing}):} los materiales deben tener una pérdida total de masa (TML) $\leq \SI{1,0}{\percent}$ y una masa volátil condensable colectada (CVCM) $\leq \SI{0,1}{\percent}$ (2.1.7). La CDS remite a la base de datos de materiales de la NASA\@.
-  \item \textbf{Campo magnético:} los imanes pasivos deben limitar su campo a 0{,}5~gauss por encima del campo terrestre, fuera de la envolvente estática del satélite (2.1.8).
-  \item \textbf{Venteo durante el ascenso:} el satélite debe admitir el venteo de ascenso con una relación volumen ventilable/área menor a \SI{50,8}{\metre} (2000 pulgadas) (2.1.9).
+  \item \textbf{Integridad:} ninguna parte puede desprenderse del satélite durante el lanzamiento, la eyección o la operación.
+  \item \textbf{Pirotecnia, propulsión y materiales peligrosos:} deben cumplir el manual de seguridad de rango AFSPCMAN~91\nobreakdash-710, Vol.~3. Los sistemas de propulsión requieren al menos tres inhibiciones de activación.
+  \item \textbf{Baterías:} se recomienda considerar los límites de la FAA (\emph{Federal Aviation Administration}) para baterías transportadas por pasajeros; por ejemplo, \SI{100}{\watt\hour} por batería de ion-litio de consumo.
+  \item \textbf{Desgasificación (\emph{outgassing}):} los materiales deben tener una pérdida total de masa (TML) $\leq \SI{1,0}{\percent}$ y un valor de Material Volátil Condensable Recolectado (CVCM) $\leq \SI{0,1}{\percent}$. La CDS remite a la base de datos de materiales de la NASA\@~\cite{nasa_outgassing}.
+  \item \textbf{Campo magnético:} los imanes pasivos deben limitar su campo a \SI{0,5}{Gauss} por encima del campo terrestre, fuera de la envolvente estática del satélite.
+  \item \textbf{Ventilación durante el ascenso:} el satélite debe admitir la ventilación en la fase de ascenso con una relación (Volumen Ventable)/(Área de Ventilación)~$\lneq$~\SI{50,8}{\metre}.
 \end{itemize}
 
-%--------------------------------------------------------------------
+
 \section{Especificaciones mecánicas}\label{sec:cds-mecanicos}
 
-Las dimensiones y características mecánicas se definen en los dibujos del Apéndice~B de la CDS\@. La CDS sugiere usar el procedimiento CIFP (\emph{CubeSat Inspection and Fit-check Procedure}), publicado en cubesat.org, para verificar el cumplimiento dimensional. Los requisitos de esta sección aplican a dispensadores que no usan el método de sujeción por pestañas (\emph{tabs}); los CubeSats con pestañas tienen requisitos propios, publicados por Planetary Systems Corporation (PSC)~\cite[Sec.~2.2]{cds14}.
+Las dimensiones y características de cada configuración de CubeSat se definen en los dibujos del Apéndice~B de la CDS\@. La CDS sugiere usar el procedimiento CIFP (\emph{CubeSat Inspection and Fit-check Procedure}) para verificar el cumplimiento dimensional~\cite{CIFP}. Los requisitos de esta sección aplican a los desplegadores que usan el sistema de sujeción por rieles, es decir, a los que no emplean el método de pestañas (\emph{tabs}). Los CubeSats diseñados con pestañas tienen requisitos propios, que la CDS remite al sitio de Planetary Systems Corporation (PSC)~\cite[Sec.~2.2]{cds14}.
+
+\subsection{El método de sujeción por pestañas}\label{subsec:cds-pestanas}
+
+El método de pestañas fue desarrollado por PSC para su dispensador CSD (\emph{Canisterized Satellite Dispenser}). PSC pertenece hoy a Rocket Lab, donde se aloja la documentación del CSD~\cite{rocketlabdisp}. En lugar de los cuatro rieles del estándar de Cal Poly, el satélite lleva dos pestañas que recorren todo su largo, y el dispensador las sujeta como una pinza de freno sujeta un disco~\cite{hevner11}. Los autores del artículo original atribuyen al método estas ventajas~\cite{hevner11}:
+
+\begin{itemize}
+  \item Menos vibración durante el lanzamiento;
+  \item Una dinámica más predecible y modelable;
+  \item Tolerancias estrictas solo en el espesor de las pestañas;
+  \item Más lugar para paneles solares, porque las otras dos esquinas quedan sin rieles.
+\end{itemize}
+
+La especificación de carga útil de PSC para 3U, 6U y 12U establece que las pestañas son de aleación de aluminio y que no pueden tener agujeros ni salientes. Establece además que el parámetro de diseño no es la masa sino la carga total en las pestañas, con un límite de \SI{3559}{\newton}~\cite{psc2002367}. El largo del satélite es de unos \SIlist{361;366}{\milli\metre}, aproximadamente una pulgada más que un CubeSat estándar~\cite{psc2002367}.
+
+La especificación de PSC y la hoja de datos del CSD cubren únicamente los tamaños 3U, 6U y 12U~\cite{psc2002367,pscdatasheet}. Ninguno de los dos documentos menciona el 1U. La hoja de datos admite que un CubeSat existente se adapte con pestañas atornilladas, pero el ejemplo que muestra es de 3U~\cite{pscdatasheet}. Por eso este trabajo asume que el transponder va en un 1U sujeto por rieles. \verificar{con el proveedor de lanzamiento qué dispensador se usará y si admite un 1U por rieles}
+
+% Figura: descomentar cuando exista el archivo en Figuras/ (ver nota de licencia).
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.7\textwidth]{csd_pestanas.png}
+%   \caption[Dispensador CSD de PSC.]{Dispensador CSD de PSC con un satélite sujeto por pestañas. Fuente: \cite{rocketlabdisp}.}\label{fig:cds-csd}
+% \end{figure}
 
 \subsection{Sistema de coordenadas y dimensiones}\label{subsec:cds-coordenadas}
 
 El origen del sistema de coordenadas está en el centro geométrico del CubeSat, y las dimensiones deben ajustarse al apartado correspondiente del Apéndice~B (2.2.1 y 2.2.1.1). La cara $-Z$ se inserta primero en el dispensador (2.2.2). Los separadores (\emph{standoffs}) de las caras $\pm Z$ evitan la interferencia con satélites vecinos y con la interfaz del dispensador (2.2.1.2)~\cite{cds14}.
 
-Los valores dimensionales exactos del 1U (lado, altura total, tolerancias, posición de los rieles) están en el dibujo del Apéndice~B. \verificar{transcribir las cotas del 1U directamente del dibujo del Apéndice B de la CDS Rev.~14.1; el texto extraído no las incluye}
+Los valores dimensionales exactos del 1U (lado, altura total, tolerancias, posición de los rieles) están en el dibujo del Apéndice~B. 
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.98\textwidth]{cds_1u_dibujo.png}}
+  \caption{Dibujo de especificación del CubeSat 1U~\cite[Apéndice~B]{cds14}.}\label{fig:cds-1u}
+\end{figure}
 
 \subsection{Rieles y protuberancias}\label{subsec:cds-rieles}
 
@@ -100,7 +100,32 @@ La estructura del CubeSat debería ser de aleación de aluminio. Típicamente se
 
 Si el CubeSat comparte dispensador con otros, cada uno debe tener un mecanismo que favorezca la separación de sus vecinos (2.2.14). Como guía, la CDS recomienda un resorte de separación con fuerza máxima menor a \SI{6,7}{\newton} (1,5~lbf) y carrera mayor a \SI{2,5}{\milli\metre} (0,1~pulgadas). Un resorte demasiado fuerte puede superar al resorte del dispensador y producir una separación impredecible; uno demasiado débil puede no alcanzar a separarlos lo suficiente (2.2.14.1). El mecanismo no debe sobresalir del nivel del separador en configuración estibada (2.2.14.2) y no es necesario si el satélite no comparte dispensador (2.2.14.4)~\cite{cds14}.
 
-%--------------------------------------------------------------------
+
+
+La Tabla~\ref{tab:cds-masa-cg} resume la masa típica máxima y los rangos admisibles del centro de gravedad para cada configuración, medidos desde el centro geométrico~\cite[Sec.~2.2.10 y 2.2.11, Tablas~1 y~2]{cds14}. La CDS aclara que se pueden evaluar masas mayores caso por caso, y que la masa admisible depende de las capacidades del desplegador.
+
+\begin{table}[H]
+  \centering
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabular}{lcccc}
+    \toprule
+    Configuración & Masa [\si{\kilo\gram}] & X [\si{\centi\metre}] & Y [\si{\centi\metre}] & Z [\si{\centi\metre}] \\
+    \midrule
+    1U   & 2,00  & $\pm 2$   & $\pm 2$   & $\pm 2$   \\
+    1,5U & 3,00  & $\pm 2$   & $\pm 2$   & $\pm 3$   \\
+    2U   & 4,00  & $\pm 2$   & $\pm 2$   & $\pm 4{,}5$ \\
+    3U   & 6,00  & $\pm 2$   & $\pm 2$   & $\pm 7$   \\
+    6U   & 12,00 & $\pm 4{,}5$ & $\pm 2$ & $\pm 7$   \\
+    12U  & 24,00 & $\pm 4{,}5$ & $\pm 4{,}5$ & $\pm 7$ \\
+    \bottomrule
+  \end{tabular}
+  \caption[Masa y centro de gravedad por configuración (CDS Rev.~14.1)]{Masa típica máxima y rango admisible del centro de gravedad por configuración}\label{tab:cds-masa-cg}
+\end{table}
+
+Para el 1U, la masa máxima es de \SI{2}{\kilo\gram} y el centro de gravedad debe quedar dentro de una caja de $\pm\SI{2}{\centi\metre}$ en cada eje. Esto es relevante para el diseño de la placa: la distribución de masas (batería, placas apiladas, PA con su disipador) afecta directamente el centro de gravedad del satélite completo.
+
+
+
 \section{Especificaciones eléctricas}\label{sec:cds-electricos}
 
 La sección~2.3 define las características de seguridad eléctrica que deben cumplirse con cualquier dispensador~\cite[Sec.~2.3]{cds14}.

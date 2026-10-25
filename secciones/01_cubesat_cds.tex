@@ -6,14 +6,14 @@ Este capítulo resume la \emph{CubeSat Design Specification} (CDS), Rev.~14.1, e
 
 El proyecto CubeSat nació en 1999 como una colaboración entre el Prof.~Jordi Puig-Suari (Cal Poly, San Luis Obispo) y el Prof.~Bob Twiggs (Laboratorio de Desarrollo de Sistemas Espaciales de Stanford). Buscaba reducir el costo y el tiempo de desarrollo, facilitar el acceso al espacio y sostener una alta frecuencia de lanzamientos~\cite[Sec.~1.1]{cds14}.
 
-Un CubeSat es un satélite que adopta un tamaño y un factor de forma estandarizados, cuya unidad se denomina <<U>>. Un CubeSat de 1U es un cubo de \SI{10}{\centi\metre} de lado con una masa de hasta \SI{2}{\kilo\gram}~\cite[Sec.~1.1]{cds14}. El estándar cubre configuraciones de 1U a 12U y, como objetivo secundario, informa sobre los dispensadores/desplegadores disponibles y sus interfaces.
+Un CubeSat es un satélite que adopta un tamaño y un factor de forma estandarizados, cuya unidad se denomina <<U>>. Un CubeSat de 1U es un cubo de \SI{10}{\centi\metre} de lado con una masa de hasta \SI{2}{\kilo\gram}~\cite[Sec.~1.1]{cds14}. El estándar cubre configuraciones de 1U a 12U (Figura~\ref{fig:cds-family}) y, como objetivo secundario, informa sobre los dispensadores/desplegadores disponibles y sus interfaces.
 
-La Rev.~14 (julio de 2020) reemplazó a la Rev.~13 e incorporó las configuraciones de 6U y 12U y pasó de un conjunto de requisitos rígidos a un documento más cercano a una guía de diseño. Según el sitio del programa CubeSat, la Rev.~14.1 (febrero de 2022) es la versión vigente, en la cual se actualizó la información de desplegadores, y se agregaron aclaraciones en las secciones~2 y~3~\cite[Rev. 14 Change Summary]{cds14}.
+La Rev.~14 (julio de 2020) reemplazó a la Rev.~13 e incorporó las configuraciones de 6U y 12U y pasó de un conjunto de requisitos rígidos a un documento más cercano a una guía de diseño~\cite{cdsanuncio}. Según el sitio del programa CubeSat~\cite{cubesatinfo}, la Rev.~14.1 (febrero de 2022) es la versión vigente, en la cual se actualizó la información de desplegadores, y se agregaron aclaraciones en las secciones~2 y~3~\cite[Rev. 14 Change Summary]{cds14}.
 
 \begin{figure}[H]
   \centering
   \fbox{\includegraphics[width=0.6\textwidth]{cds_familia.png}}
-  \caption{La familia CubeSat actual (1U – 12U)~\cite[Sec. 1.1]{cds14}.}\label{fig:cds-family}
+  \caption[Familia CubeSat actual]{La familia CubeSat actual (1U – 12U)~\cite[Sec. 1.1]{cds14}.}\label{fig:cds-family}
 \end{figure}
 
 \subsection{Jerarquía normativa y lenguaje de la especificación}\label{subsec:cds-jerarquia}
@@ -30,22 +30,22 @@ La CDS reúne requisitos de seguridad y compatibilidad aplicables a todo el sat�
   \item \textbf{Baterías:} se recomienda considerar los límites de la FAA (\emph{Federal Aviation Administration}) para baterías transportadas por pasajeros.
   \item \textbf{Desgasificación (\emph{outgassing}):} los materiales deben tener una pérdida total de masa (TML) $\leq \SI{1,0}{\percent}$ y un valor de Material Volátil Condensable Recolectado (CVCM) $\leq \SI{0,1}{\percent}$. La CDS remite a la base de datos de materiales de la NASA\@~\cite{nasa_outgassing}.
   \item \textbf{Campo magnético:} los imanes pasivos deben limitar su campo a \SI{0,5}{Gauss} por encima del campo terrestre, fuera de la envolvente estática del satélite.
-  \item \textbf{Ventilación durante el ascenso:} el satélite debe admitir la ventilación en la fase de ascenso con una relación (Volumen Ventable)/(Área de Ventilación)~$\lneq$~\SI{50,8}{\metre}.
+  \item \textbf{Ventilación durante el ascenso:} el satélite debe admitir la ventilación en la fase de ascenso con una relación (Volumen Ventable) / (Área de Ventilación)~$<$~\SI{50,8}{\metre}.
 \end{itemize}
 
 
 \section{Especificaciones mecánicas}\label{sec:cds-mecanicos}
 
-Las dimensiones y características de cada configuración de CubeSat se definen en los dibujos del Apéndice~B de la CDS\@. La CDS sugiere usar el procedimiento CIFP (\emph{CubeSat Inspection and Fit-check Procedure}) para verificar el cumplimiento dimensional~\cite{CIFP}. Los requisitos de esta sección aplican a los desplegadores que usan el sistema de sujeción por rieles, es decir, a los que no emplean el método de pestañas (\emph{tabs}) (Ver subsección \ref{subsec:pestañas}).
+Las dimensiones y características de cada configuración de CubeSat se definen en los dibujos del Apéndice~B de la CDS\@. La CDS sugiere usar el procedimiento CIFP (\emph{CubeSat Inspection and Fit-check Procedure}) para verificar el cumplimiento dimensional~\cite{CIFP}. Los requisitos de esta sección aplican a los desplegadores que usan el sistema de sujeción por rieles, es decir, a los que no emplean el método de pestañas (\emph{tabs}) (véase Subsección~\ref{subsec:pestanas}).
 
 \subsection{Sistema de coordenadas y dimensiones}\label{subsec:cds-coordenadas}
 
-El origen del sistema de coordenadas está en el centro geométrico del CubeSat, y las dimensiones deben ajustarse al apartado correspondiente del Apéndice~B. La cara $-Z$ se inserta primero en el dispensador. Los separadores (\emph{standoffs}) de las caras $\pm Z$ evitan la interferencia con satélites vecinos y con la interfaz del dispensador~\cite{cds14}.
+El origen del sistema de coordenadas está en el centro geométrico del CubeSat, y las dimensiones deben ajustarse al apartado correspondiente del Apéndice~B. La cara $-Z$ se inserta primero en el dispensador. Los separadores (\emph{standoffs}) de las caras $\pm Z$ evitan la interferencia con satélites vecinos y con la interfaz del dispensador~\cite{cds14}. La Figura~\ref{fig:cds-1u} reproduce el dibujo de especificación del CubeSat 1U.
 
 \begin{figure}[H]
   \centering
   \fbox{\includegraphics[width=0.98\textwidth]{cds_1u_dibujo.png}}
-  \caption{Dibujo de especificación del CubeSat 1U~\cite[Apéndice~B]{cds14}.}\label{fig:cds-1u}
+  \caption[Plano CubeSat 1U]{Dibujo de especificación del CubeSat 1U~\cite[Apéndice~B]{cds14}.}\label{fig:cds-1u}
 \end{figure}
 
 \subsection{Rieles y protuberancias}\label{subsec:cds-rieles}
@@ -89,24 +89,24 @@ La Tabla~\ref{tab:cds-masa-cg} resume la masa típica máxima y los rangos admis
   \caption[Masa y centro de gravedad por configuración (CDS Rev.~14.1)]{Masa típica máxima y rango admisible del centro de gravedad por configuración}\label{tab:cds-masa-cg}
 \end{table}
 
-\subsection{El método de sujeción por pestañas}\label{subsec:pestañas}
+\subsection{El método de sujeción por pestañas}\label{subsec:pestanas}
 
-El método de pestañas fue desarrollado por PSC para su dispensador CSD (\emph{Canisterized Satellite Dispenser}). PSC pertenece hoy a Rocket Lab, donde se aloja la documentación del CSD~\cite{rocketlabdisp}. En lugar de los cuatro rieles del estándar de Cal Poly, el satélite lleva dos pestañas que recorren todo su largo~\cite{hevner11}. Los autores atribuyen ventajas como una menor vibración en el lanzamiento, tolerancias estrictas solo en el espesor de las pestañas y más lugar para paneles solares (las otras dos esquinas quedan sin rieles)~\cite{hevner11}.
+El método de pestañas fue desarrollado por PSC para su dispensador CSD (\emph{Canisterized Satellite Dispenser}). PSC pertenece hoy a Rocket Lab, donde se aloja la documentación del CSD~\cite{rocketlabdisp}. En lugar de los cuatro rieles del estándar de Cal Poly, el satélite lleva dos pestañas que recorren todo su largo (Figura~\ref{fig:cds-dif})~\cite{hevner11}. Los autores atribuyen ventajas como una menor vibración en el lanzamiento, tolerancias estrictas solo en el espesor de las pestañas y más lugar para paneles solares (las otras dos esquinas quedan sin rieles)~\cite{hevner11}. La Figura~\ref{fig:cds-csd} muestra una carga útil junto a un dispensador CSD\@.
 
-Se establece que las pestañas son de aleación de aluminio y que no pueden tener agujeros ni salientes, además que el parámetro de diseño no es la masa sino la carga total en las pestañas, con un límite de \SI{3559}{\newton}~\cite{psc2002367}. El largo del satélite es entre \SIlist{361;366}{\milli\metre}, aproximadamente una pulgada más que un CubeSat estándar~\cite{psc2002367}.
+Se establece que las pestañas son de aleación de aluminio y que no pueden tener agujeros ni salientes, además que el parámetro de diseño no es la masa sino la carga total en las pestañas, con un límite de \SI{3559}{\newton}~\cite{psc2002367}. El largo del satélite es entre entre \SI{361}{\milli\metre} y \SI{366}{\milli\metre}, aproximadamente una pulgada más que un CubeSat estándar~\cite{psc2002367}.
 
 La especificación de PSC y la hoja de datos del CSD cubren únicamente los tamaños 3U, 6U y 12U~\cite{psc2002367,pscdatasheet}, si bien no se niega la posible aplicación a satélites de 1U, tampoco la menciona. La hoja de datos admite que un CubeSat existente se adapte con pestañas atornilladas.
 
 \begin{figure}[H]
   \centering
   \fbox{\includegraphics[width=0.8\textwidth]{tabs.png}}
-  \caption[Diferencia.]{Diferencia entre una carga útil con rieles y pestañas. Fuente:~\cite{hevner11}.}\label{fig:cds-dif}
+  \caption[Diferencia entre rieles y pestañas]{Diferencia entre una carga útil con rieles y pestañas. Fuente:~\cite{hevner11}.}\label{fig:cds-dif}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \fbox{\includegraphics[width=0.6\textwidth]{canister.png}}
-  \caption[Dispensador CSD de PSC.]{Carga útil junto a dispensador CSD\@. Fuente:~\cite{hevner11}.}\label{fig:cds-csd}
+  \caption[Dispensador CSD de PSC]{Carga útil junto a dispensador CSD\@. Fuente:~\cite{hevner11}.}\label{fig:cds-csd}
 \end{figure}
 
 
@@ -154,7 +154,7 @@ Se indica que los niveles y requisitos de ensayo son específicos de cada misió
 
 El dispensador lleva los CubeSats y es la interfaz con el vehículo de lanzamiento. Todos los dispensadores actuales adhieren a uno de dos sistemas de sujeción: el de rieles, desarrollado por Cal Poly para el P-POD, y el de pestañas, desarrollado por PSC\@. En ambos casos, un resorte impulsa una placa empujadora que eyecta al satélite.
 
-Se lista en la Figura~\ref{fig:tabla_dispensadores}, los dispensadores disponibles con sus opciones. Advierte además que diseñar el satélite para una característica que no está en todos los dispensadores restringe las oportunidades de lanzamiento.
+Se lista en la Figura~\ref{fig:tabla_dispensadores}, los dispensadores disponibles con sus opciones. La CDS advierte además que diseñar el satélite para una característica que no está en todos los dispensadores restringe las oportunidades de lanzamiento.
 
 \begin{figure}[H]
   \centering
